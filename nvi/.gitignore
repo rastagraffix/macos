@@ -1,0 +1,8 @@
+*.o
+/.depend
+/cscope.out
+/nvi
+/obj
+/tags
+/vi.1.gz
+/XREF

@@ -1,0 +1,124 @@
+#!/bin/sh
+
+# Release:  (HEAD, Release-7, master) b3db3a1
+
+# Copyright (c) 2013 Lyndon Nerenberg <lyndon@orthanc.ca>
+# All rights reserved.
+# 
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+# 
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+# OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+# LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+# OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+# SUCH DAMAGE.
+
+osascript - "$@" << '___EOF'
+on run argv
+
+  set argc to number of items in argv
+  if argc equals 0 then
+    return "no command?"
+  end if
+  set cmd to first text item of argv
+  if argc > 1 then 
+    set opt to second text item of argv
+  end if
+  tell application "DVD Player" to set viewer full screen menu override to true
+  tell application "DVD Player" to obscure cursor
+
+  if cmd = "audio" then
+    if argc equals 2 then
+      tell application "DVD Player" to set audio track to opt as integer
+    else
+      tell application "DVD Player" to go to audio menu
+    end if
+
+  else if cmd = "chapter" then
+    tell application "DVD Player" to set chapter to opt
+
+  else if cmd = "down" then
+    tell application "DVD Player" to press down arrow key
+
+  else if cmd = "eject" then
+    tell application "DVD Player" to eject dvd
+
+  else if cmd = "enter" then
+    tell application "DVD Player" to press enter key
+
+  else if cmd = "full" then
+    tell application "DVD Player"
+      set viewer full screen to true
+    end tell
+
+  else if cmd = "left" then
+    tell application "DVD Player" to press left arrow key
+
+  else if cmd = "menu" then
+    tell application "DVD Player" to go to main menu
+
+  else if cmd = "next" then
+    tell application "DVD Player" to play next chapter
+
+  else if cmd = "nofull" then
+    tell application "DVD Player"
+      set viewer full screen to false
+    end tell
+
+  else if cmd = "pause" then
+    tell application "DVD Player" to pause dvd
+
+  else if cmd = "play" then
+    if argc > 1 then
+      tell application "DVD Player" to set title to opt
+    else
+      tell application "DVD Player" to play dvd
+    end if
+
+  else if cmd = "prev" then
+    tell application "DVD Player" to play previous chapter
+
+  else if cmd = "restart" then
+    tell application "DVD Player" to go to beginning of disc
+
+  else if cmd = "right" then
+    tell application "DVD Player" to press right arrow key
+
+  else if cmd = "state" or cmd = "status" then
+    tell application "DVD Player" to get dvd state
+
+  else if cmd = "stop" then
+    tell application "DVD Player" to stop dvd
+
+  else if cmd = "timeleft" then
+    tell application "DVD Player" to get remaining time
+
+  else if cmd = "title" then
+    tell application "DVD Player" to go to title menu
+
+  else if cmd = "up" then
+    tell application "DVD Player" to press up arrow key
+
+  else if cmd = "vol" then
+    tell application "DVD Player" to set audio volume to opt
+
+  else 
+    return "unknown command"
+  end if
+end run
+
+___EOF

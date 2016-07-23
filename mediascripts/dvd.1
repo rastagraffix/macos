@@ -1,0 +1,123 @@
+.Dd January 21, 2013
+.\"
+.\" Release  (HEAD, Release-7, master) b3db3a1
+.\" 
+.\" Copyright (c) 2013 Lyndon Nerenberg <lyndon@orthanc.ca>
+.\" All rights reserved.
+.\" 
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 
+.\" THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\" 
+.Dt DVD 1 LOCAL
+.Os
+.Sh NAME
+.Nm dvd
+.Nd control DVD Player
+.Sh SYNOPSIS
+.Nm
+.Ar command
+.Op Ar arg
+.Sh DESCRIPTION
+The
+.Nm
+utility controls the DVD Player application.
+The DVD Player application will be launched if it's not already
+running.
+.Ss Commands
+The following commands
+are recognized:
+.Pp
+.Bl -tag -width "Ic audio Op Ar track"
+.It Ic chapter Ar num
+Skip to chapter
+.Ar num
+in the current title.
+.It Ic eject
+Eject the DVD.
+.It Ic full
+Switch the player window into fullscreen mode.
+.It Ic next
+Skip to the next chapter marker.
+.It Ic nofull
+Switch the player window out of fullscreen mode.
+.It Ic pause
+Pause the currently playing title.
+.It Ic play Op Ar title
+Play (or un-pause) the DVD. Specify a numeric
+.Ar title
+to play that title.
+.It Ic prev
+Skip to the previous chapter marker.
+.It Ic state , Ic status
+Print the state of the DVD player. A partial list of values includes
+.Sy stopped ,
+.Sy paused ,
+.Sy playing ,
+and
+.Sy playing still
+(when displaying a DVD menu).
+.It Ic timeleft
+Print the number of seconds remaining in the currently playing title.
+.It Ic restart
+Re-initialize the state of the DVD, as if it had just been
+inserted in the player.
+.It Ic stop
+Stop playing the current title or menu.
+.It Ic vol Ar level
+Set the DVD Player's volume to
+.Ar level ,
+in the range
+.Li 0
+(minimum) to
+.Li 255
+(maximum).
+.It Ic enter , Ic up , Ic down , Ic left , Ic right
+Press the corresponding button on the DVD controller.
+.It Ic audio Op Ar track
+Select the specified (numeric) audio track. If
+.Ar track
+is not given, display the DVD's audio menu.
+.It Ic menu
+Display the DVD's main menu.
+.It Ic title
+Display the DVD's title menu.
+.El
+.Sh DIAGNOSTICS
+The
+.Ic state
+and
+.Ic timeleft
+commands print the values documented in their descriptions above. The
+remaining commands print the value returned by the Applescript bridge
+interface to the DVD Player application.
+.Pp
+The exit status of the
+.Nm
+utility is that of the underlying
+.Xr osascript 1
+command.
+.Sh SEE ALSO
+.Xr osascript 1 ,
+.Xr vol 1
+.Sh BUGS
+The error messages returned by the Applescript bridge interface are
+cryptic and opaque.

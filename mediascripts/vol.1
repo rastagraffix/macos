@@ -1,0 +1,71 @@
+.Dd January 21, 2013
+.\"
+.\" Release  (HEAD, Release-7, master) b3db3a1
+.\" 
+.\" Copyright (c) 2013 Lyndon Nerenberg <lyndon@orthanc.ca>
+.\" All rights reserved.
+.\" 
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 
+.\" THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\" 
+.Dt VOL 1 LOCAL
+.Os
+.Sh NAME
+.Nm vol
+.Nd control system volume levels
+.Sh SYNOPSIS
+.Nm
+.Op Ar command Op Ar level
+.Sh DESCRIPTION
+The
+.Nm
+utility
+sets or displays the system volume levels. If no
+.Ar command
+is given,
+.Nm
+prints the current system volume settings.
+.Pp
+The volume
+.Ar level
+is an integer in the range
+.Li 0
+(minimum)
+to
+.Li 100
+(maximum).
+.Ss Commands
+The following commands
+are recognized:
+.Pp
+.Bl -tag -width "Ic alert Ar level"
+.It Ar level
+Set the system output volume.
+.It Ic alert Ar level
+Set the system alert volume.
+.It Ic input Ar level
+Set the system input volume.
+.It Ic mute
+Mute the system audio output.
+.It Ic unmute
+Un-mute the system audio output.
+.El
