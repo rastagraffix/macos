@@ -1,3 +1,25 @@
+The more time goes by, the more Apple insists on removing perfectly
+functional software from MacOS.  I guess anything the Hip Apple
+Developers(tm) haven't personally witnessed does not exist.  (The
+universe was formed in 2002, right? An offshoot from MacOS 9.)
+
+Here are replacements for perfectly functional and useful tools that
+Zombie Steve Jobs And His Minions have declared unworthy.
+
+***   NB: this repo is in flux.  I have ignored it for years, but having
+***   come back to MacOS not by choice, I need to resurrect many basic
+***   UNIX commands the Hip Kids(tm) don't grok and therefore threw
+***   overboard.
+
+
+Projects
+--------
+
+bsdmake		Re-implement bsdmake(1), but without the bloated
+		make templates.  See TODO below.
+
+ftp		Replace the perfectly viable ftp(1) command.
+
 mediascripts	Command line tools to control the system volume and
 		the DVD Player.  The latter doesn't work on recent
 		MacOS releases because Zombie Steve Jobs has declared
@@ -11,5 +33,17 @@ nvi		BSD's nvi packaged up for a standalone build. I created
 		'bsdmake install' leaves /usr/bin/vim and the vim(1)
 		manpage alone.
 
-		Currently broken because Zombie Steve Jobs and his
-		mindless minions have declared 'bsdmake' unworthy.
+rdist		A port of the 44BSD rdist(1) command.
+
+telnet		Replace the perfectly viable telnet(1) command.
+
+
+TODO / Help
+----
+
+The eradication of bsdmake(1) throws a wrench into everything.  Since
+most of this code is imported from BSD releases, a Berkeley make is
+important.  A BSD make with a stripped down set of templates would
+fit the bill here.  Work in progress ...
+
+If you want to help port code, email <lyndon@orthanc.ca> ...
