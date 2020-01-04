@@ -1,5 +1,8 @@
-mediascripts	Command line tools to control system volume and
-		DVD Player.
+mediascripts	Command line tools to control the system volume and
+		the DVD Player.  The latter doesn't work on recent
+		MacOS releases because Zombie Steve Jobs has declared
+		optical media are not sanctioned by him or his mindless
+		followers.
 
 nvi		BSD's nvi packaged up for a standalone build. I created
 		this build tree so I would have an easy way to
@@ -8,9 +11,5 @@ nvi		BSD's nvi packaged up for a standalone build. I created
 		'bsdmake install' leaves /usr/bin/vim and the vim(1)
 		manpage alone.
 
-route6d		The IPv6 RIPNG routing daemon. On my 10.6.8 systems with
-		Parallels installed, the vnic? interfaces tend to claim
-		the default route, despite on-going rtsol announcements
-		from the default router. Announcing a default route
-		from the border router via RIPNG combined with running
-		'route6d -q' on the 10.6.8 hosts cures the problem.
+		Currently broken because Zombie Steve Jobs and his
+		mindless minions have declared 'bsdmake' unworthy.
