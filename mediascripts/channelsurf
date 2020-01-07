@@ -1,6 +1,8 @@
 #!/bin/sh
 
+# UPDATE THIS LIST TO MATCH YOUR LOCAL BROADCASTERS:
 channels='2 8 10 32 42 53'
+
 pause=20
 mute=1
 
