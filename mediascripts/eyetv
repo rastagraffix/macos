@@ -1,0 +1,90 @@
+#!/bin/sh
+
+# Copyright (c) 2015 Lyndon Nerenberg <lyndon@orthanc.ca>
+# All rights reserved.
+# 
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+# 
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+# OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+# LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+# OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+# SUCH DAMAGE.
+
+osascript - "$@" << '___EOF'
+on run argv
+
+  set argc to number of items in argv
+  if argc equals 0 then
+    return "no command?"
+  end if
+  set cmd to first text item of argv
+  if argc > 1 then 
+    set opt to second text item of argv
+  end if
+
+  if cmd = "mute" then
+    tell application "EyeTV" to mute
+
+  else if cmd = "update" then
+    tell application "EyeTV" to update EPG
+
+  else if cmd = "skip" then
+    tell application "EyeTV" to skip forward
+
+  else if cmd = "back" then
+    tell application "EyeTV" to skip backward
+
+  else if cmd = "full" then
+    tell application "EyeTV" to enter full screen
+
+  else if cmd = "nofull" then
+    tell application "EyeTV" to exit full screen
+
+  else if cmd = "pause" then
+    tell application "EyeTV" to pause
+
+  else if cmd = "play" then
+    tell application "EyeTV" to play
+
+  else if cmd = "stop" then
+    tell application "EyeTV" to stop
+
+  else if cmd = "close" then
+    tell application "EyeTV" to hide player_window
+
+  else if cmd = "channel" then
+    if argc > 1 then
+      tell application "EyeTV" to set current channel to opt
+    else
+      tell application "EyeTV" to get current channel
+    end if
+
+  else if cmd = "vol" then
+    if argc > 1 then
+      tell application "EyeTV" to set playback volume to opt
+    else
+      tell application "EyeTV" to get playback volume
+    end if
+
+  else 
+    return "unknown command"
+  end if
+end run
+
+___EOF
+

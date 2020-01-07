@@ -1,0 +1,94 @@
+.Dd September 27, 2015
+.\" 
+.\" Copyright (c) 2015 Lyndon Nerenberg <lyndon@orthanc.ca>
+.\" All rights reserved.
+.\" 
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 
+.\" THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\" 
+.Dt EYETV 1 LOCAL
+.Os
+.Sh NAME
+.Nm eyetv
+.Nd control the EyeTV application
+.Sh SYNOPSIS
+.Nm
+.Ar command
+.Op Ar arg
+.Sh DESCRIPTION
+The
+.Nm
+utility issues commands to the EyeTV application.
+Invoking the
+.Nm
+utility will cause the EyeTV viewer to be launched if it is not already
+running.
+.Ss Commands
+The following
+.Ar command Ns s
+are recognized:
+.Pp
+.Bl -tag -width "channel [chan]  "
+.It full
+Switch the viewer window into fullscreen mode.
+.It nofull
+Switch the viewer window out of fullscreen mode.
+.It skip
+Skip ahead several seconds.
+.It back
+Skip back several seconds.
+.It pause
+Pause the currently playing window.
+.It play
+Play the current title.
+.It stop
+Stop playing the current title.
+.It vol Op Ar level
+Set the DVD Player's volume to
+.Ar level ,
+in the range
+.Em 0.0
+(minimum) to
+.Em 1.0
+(maximum).
+If no
+.Ar level
+is given, print the current volume setting.
+.It channel Op Ar chan
+Set the channel to
+.Ar chan .
+If no
+.Ar chan
+is given, print the currently selected channel.
+.El
+.Sh RETURN VALUES
+The exit status of the
+.Nm
+utility is that of the underlying
+.Xr osascript 1
+command.
+.Sh SEE ALSO
+.Xr channel 1 ,
+.Xr vol 1
+.Sh BUGS
+The error messages returned by the Applescript bridge interface are
+obtuse, at best.
