@@ -1,6 +1,8 @@
-Release:  (HEAD, Release-7, master) b3db3a1
-
 Simple Applescript utilities.
 
-dvd	Command line control of DVD Player.
-vol	Command line control of system and alert volumes.
+channel		Read and change the current EyeTV channel.
+channelsurf	Scan a set of channels. Run this overnight from
+		cron to prime the OTA program guide.
+dvd		DVD Player CLI.
+eyetv		EyeTV CLI.
+vol		Command line control of MacOS system and alert volumes.
