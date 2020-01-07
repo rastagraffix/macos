@@ -15,9 +15,6 @@ Zombie Steve Jobs And His Minions have declared unworthy.
 Projects
 --------
 
-bsdmake		Re-implement bsdmake(1), but without the bloated
-		make templates.  See TODO below.
-
 ftp		Replace the perfectly viable ftp(1) command.
 
 mediascripts	Command line tools to control the system volume and
@@ -26,24 +23,8 @@ mediascripts	Command line tools to control the system volume and
 		optical media are not sanctioned by him or his mindless
 		followers.
 
-nvi		BSD's nvi packaged up for a standalone build. I created
-		this build tree so I would have an easy way to
-		replace the "vim" versions of ex, vi, and view on my
-		Mac OS machines with the traditional BSD ones. Note that
-		'bsdmake install' leaves /usr/bin/vim and the vim(1)
-		manpage alone.
+nvi		BSD's nvi. (vim, without the clutter.)
 
 rdist		A port of the 44BSD rdist(1) command.
 
 telnet		Replace the perfectly viable telnet(1) command.
-
-
-TODO / Help
-----
-
-The eradication of bsdmake(1) throws a wrench into everything.  Since
-most of this code is imported from BSD releases, a Berkeley make is
-important.  A BSD make with a stripped down set of templates would
-fit the bill here.  Work in progress ...
-
-If you want to help port code, email <lyndon@orthanc.ca> ...
