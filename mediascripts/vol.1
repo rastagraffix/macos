@@ -1,6 +1,4 @@
 .Dd January 21, 2013
-.\"
-.\" Release  (HEAD, Release-7, master) b3db3a1
 .\" 
 .\" Copyright (c) 2013 Lyndon Nerenberg <lyndon@orthanc.ca>
 .\" All rights reserved.
@@ -48,24 +46,25 @@ prints the current system volume settings.
 The volume
 .Ar level
 is an integer in the range
-.Li 0
+.Sy 0
 (minimum)
 to
-.Li 100
+.Sy 100
 (maximum).
 .Ss Commands
-The following commands
+The following
+.Ar command Ns s
 are recognized:
 .Pp
-.Bl -tag -width "Ic alert Ar level"
+.Bl -tag
 .It Ar level
 Set the system output volume.
-.It Ic alert Ar level
+.It alert Ar level
 Set the system alert volume.
-.It Ic input Ar level
+.It input Ar level
 Set the system input volume.
-.It Ic mute
+.It mute
 Mute the system audio output.
-.It Ic unmute
+.It unmute
 Un-mute the system audio output.
 .El

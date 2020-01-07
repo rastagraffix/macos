@@ -1,6 +1,4 @@
 .Dd January 21, 2013
-.\"
-.\" Release  (HEAD, Release-7, master) b3db3a1
 .\" 
 .\" Copyright (c) 2013 Lyndon Nerenberg <lyndon@orthanc.ca>
 .\" All rights reserved.
@@ -31,7 +29,7 @@
 .Os
 .Sh NAME
 .Nm dvd
-.Nd control DVD Player
+.Nd control the DVD Player application
 .Sh SYNOPSIS
 .Nm
 .Ar command
@@ -39,35 +37,61 @@
 .Sh DESCRIPTION
 The
 .Nm
-utility controls the DVD Player application.
-The DVD Player application will be launched if it's not already
+utility issues commands to the DVD Player application.
+Invoking
+.Nm
+will cause the DVD Player to be launched if it is not already
 running.
 .Ss Commands
-The following commands
+The following
+.Ar command Ns s
 are recognized:
 .Pp
-.Bl -tag -width "Ic audio Op Ar track"
-.It Ic chapter Ar num
-Skip to chapter
-.Ar num
-in the current title.
-.It Ic eject
-Eject the DVD.
-.It Ic full
-Switch the player window into fullscreen mode.
-.It Ic next
-Skip to the next chapter marker.
-.It Ic nofull
-Switch the player window out of fullscreen mode.
-.It Ic pause
-Pause the currently playing title.
-.It Ic play Op Ar title
+.Bl -tag -compact -width "audio [track] "
+.It Li menu
+Display the DVD's main menu.
+.It Li title
+Display the DVD's title menu.
+.It Li play Op Ar title
 Play (or un-pause) the DVD. Specify a numeric
 .Ar title
 to play that title.
-.It Ic prev
+.It Li pause
+Pause the currently playing title.
+.It Li stop
+Stop playing the current title or menu.
+.It Li next
+Skip to the next chapter marker.
+.It Li prev
 Skip to the previous chapter marker.
-.It Ic state , Ic status
+.It Li chapter Ar chap
+Skip to chapter
+.Ar chap
+in the current title.
+.It Li vol Ar level
+Set the DVD Player's volume to
+.Ar level ,
+in the range
+.Em 0
+(minimum) to
+.Em 255
+(maximum).
+.It Li audio Op Ar track
+Select the specified (numeric) audio track. If
+.Ar track
+is not given, display the DVD's audio menu.
+.It Li full
+Switch the player window into fullscreen mode.
+.It Li nofull
+Switch the player window out of fullscreen mode.
+.It Li timeleft
+Print the number of seconds remaining in the currently playing title.
+.It Li restart
+Re-initialize the state of the DVD, as if it had just been
+inserted in the player.
+.It Li enter Ns , Li up Ns , Li down Ns , Li left Ns , Li right
+Press the corresponding button on the (virtual) DVD controller.
+.It Li state Ns , Li status
 Print the state of the DVD player. A partial list of values includes
 .Sy stopped ,
 .Sy paused ,
@@ -75,33 +99,10 @@ Print the state of the DVD player. A partial list of values includes
 and
 .Sy playing still
 (when displaying a DVD menu).
-.It Ic timeleft
-Print the number of seconds remaining in the currently playing title.
-.It Ic restart
-Re-initialize the state of the DVD, as if it had just been
-inserted in the player.
-.It Ic stop
-Stop playing the current title or menu.
-.It Ic vol Ar level
-Set the DVD Player's volume to
-.Ar level ,
-in the range
-.Li 0
-(minimum) to
-.Li 255
-(maximum).
-.It Ic enter , Ic up , Ic down , Ic left , Ic right
-Press the corresponding button on the DVD controller.
-.It Ic audio Op Ar track
-Select the specified (numeric) audio track. If
-.Ar track
-is not given, display the DVD's audio menu.
-.It Ic menu
-Display the DVD's main menu.
-.It Ic title
-Display the DVD's title menu.
+.It Li eject
+Eject the DVD.
 .El
-.Sh DIAGNOSTICS
+.Sh RETURN VALUES
 The
 .Ic state
 and
@@ -120,4 +121,4 @@ command.
 .Xr vol 1
 .Sh BUGS
 The error messages returned by the Applescript bridge interface are
-cryptic and opaque.
+obtuse, at best.
