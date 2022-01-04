@@ -1,30 +1,10 @@
-The more time goes by, the more Apple insists on removing perfectly
-functional software from MacOS.  I guess anything the Hip Apple
-Developers(tm) haven't personally witnessed does not exist.  (The
-universe was formed in 2002, right? An offshoot from MacOS 9.)
+This project contains replacements for things Apple has stupidly
+removed from MacOS.
 
-Here are replacements for perfectly functional and useful tools that
-Zombie Steve Jobs And His Minions have declared unworthy.
+Things install under /usr/local.  Run 'make dirs' once to
+create any missing directories.  This is targetted at developers,
+so you're expected to figure out the rest on your own.
 
-***   NB: this repo is in flux.  I have ignored it for years, but having
-***   come back to MacOS not by choice, I need to resurrect many basic
-***   UNIX commands the Hip Kids(tm) don't grok and therefore threw
-***   overboard.
-
-
-Projects
---------
-
-ftp		Replace the perfectly viable ftp(1) command.
-
-mediascripts	Command line tools to control the system volume and
-		the DVD Player.  The latter doesn't work on recent
-		MacOS releases because Zombie Steve Jobs has declared
-		optical media are not sanctioned by him or his mindless
-		followers.
-
-nvi		BSD's nvi. (vim, without the clutter.)
-
-rdist		A port of the 44BSD rdist(1) command.
-
-telnet		Replace the perfectly viable telnet(1) command.
+The 'mediascripts' directory contains some old Applescript utilities
+I wrote for my EyeTV tuner.  That device has been out of support for
+a few years now, and it's unlikely that the code works any longer ...

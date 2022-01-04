@@ -2,7 +2,6 @@
 # $FreeBSD: head/usr.bin/vi/Makefile 201386 2010-01-02 10:27:05Z ed $
 #
 
-BINDIR=	/usr/bin
 CTAGS=	ctags
 SRCDIR=	${.CURDIR}
 
