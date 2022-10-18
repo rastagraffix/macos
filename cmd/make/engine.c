@@ -100,6 +100,10 @@ static void setup_engine(void);
 static char **recheck_command_for_shell(char **);
 static void list_parents(GNode *, FILE *);
 
+#ifndef _NSIG
+# define _NSIG NSIG
+#endif
+
 /* XXX due to a bug in make's logic, targets looking like *.a or -l*
  * have been silently dropped when make couldn't figure them out.
  * Now, we warn about them until all Makefile bugs have been fixed.
