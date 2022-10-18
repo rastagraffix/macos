@@ -24,7 +24,11 @@ CLEANFILES+= varhashconsts.h condhashconsts.h nodehashconsts.h
 MAGICVARSLOTS=82
 MAGICCONDSLOTS=65
 
-${PROG}: ${SRCS:.c=.o} varhashconsts.h condhashconsts.h nodehashconsts.h
+HEADERS= varhashconsts.h condhashconsts.h nodehashconsts.h
+OBJS= ${SRCS:.c=.o}
+
+${PROG}: ${OBJS} ${HEADERS}
+	${CC} ${CFLAGS} -o ${PROG} ${OBJS}
 
 all: ${PROG}
 
