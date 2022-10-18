@@ -8,13 +8,20 @@ CDEFS+=-DHAS_PATHS_H
 CDEFS+=-DHAS_EXTENDED_GETCWD
 #CDEFS+=-DHAS_STATS
 
-CFLAGS+=${CDEFS} -I.
+CFLAGS+=${CDEFS} -I. -Ilst.lib
 
 SRCS=	arch.c buf.c cmd_exec.c compat.c cond.c dir.c direxpand.c dump.c \
 	engine.c enginechoice.c error.c expandchildren.c \
 	for.c init.c job.c lowparse.c main.c make.c memory.c ohash.c parse.c \
 	parsevar.c reallocarray.c str.c stats.c suff.c targ.c targequiv.c \
 	timestamp.c var.c varmodifiers.c varname.c
+
+LSTSRCS = lst.lib/lstAddNew.c lst.lib/lstAppend.c lst.lib/lstConcat.c \
+	lst.lib/lstConcatDestroy.c lst.lib/lstDeQueue.c lst.lib/lstDestroy.c \
+	lst.lib/lstDupl.c lst.lib/lstFindFrom.c lst.lib/lstForEachFrom.c \
+	lst.lib/lstInit.c lst.lib/lstInsert.c lst.lib/lstMember.c \
+	lst.lib/lstRemove.c lst.lib/lstReplace.c lst.lib/lstRequeue.c \
+	lst.lib/lstSucc.c
 
 CLEANFILES+=generate generate.o regress.o check
 
@@ -25,7 +32,7 @@ MAGICVARSLOTS=82
 MAGICCONDSLOTS=65
 
 HEADERS= varhashconsts.h condhashconsts.h nodehashconsts.h
-OBJS= ${SRCS:.c=.o}
+OBJS= ${SRCS:.c=.o} ${LSTSRCS:.c=.o}
 
 ${PROG}: ${OBJS} ${HEADERS}
 	${CC} ${CFLAGS} -o ${PROG} ${OBJS}
@@ -57,4 +64,6 @@ var.o: varhashconsts.h
 cond.o: condhashconsts.h
 targ.o parse.o: nodehashconsts.h
 
-.PHONY:		regress
+clean:
+	rm -f ${OBJS} ${CLEANFILES}
+.PHONY:		regress clean
