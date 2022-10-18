@@ -45,6 +45,7 @@
 #include <unistd.h>
 #include <ohash.h>
 #include "defines.h"
+#include "funcs.h"
 #include "memory.h"
 
 static void enomem(size_t);

@@ -49,6 +49,16 @@
 #define ts_set_out_of_date(t)	(t).tv_sec = TMIN, (t).tv_nsec = 0
 #define is_out_of_date(t)	((t).tv_sec == TMIN && (t).tv_nsec == 0)
 
+/* timespeccmp from OpenBSD 7.1 sys/time.h */
+#define timespeccmp(tvp, uvp, cmp)                                      \
+        (((tvp)->tv_sec == (uvp)->tv_sec) ?                             \
+            ((tvp)->tv_nsec cmp (uvp)->tv_nsec) :                       \
+            ((tvp)->tv_sec cmp (uvp)->tv_sec))
+
+#ifndef st_mtimensec
+# define st_mtimensec st_mtimespec.tv_nsec
+#endif
+
 #define ts_set_from_stat(s, t) \
 do { \
 	(t).tv_sec = (s).st_mtime; \
