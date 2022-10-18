@@ -1,0 +1,56 @@
+#	$OpenBSD: Makefile,v 1.64 2020/01/13 15:41:53 espie Exp $
+
+PROG=	make
+CDIAGFLAGS=-Wall -W -Wno-char-subscripts -Wstrict-prototypes -pedantic \
+	-Wmissing-prototypes -Wdeclaration-after-statement -std=c99
+
+CDEFS+=-DHAS_PATHS_H
+CDEFS+=-DHAS_EXTENDED_GETCWD
+#CDEFS+=-DHAS_STATS
+
+CFLAGS+=${CDEFS} -I.
+
+SRCS=	arch.c buf.c cmd_exec.c compat.c cond.c dir.c direxpand.c dump.c \
+	engine.c enginechoice.c error.c expandchildren.c \
+	for.c init.c job.c lowparse.c main.c make.c memory.c ohash.c parse.c \
+	parsevar.c reallocarray.c str.c stats.c suff.c targ.c targequiv.c \
+	timestamp.c var.c varmodifiers.c varname.c
+
+CLEANFILES+=generate generate.o regress.o check
+
+CLEANFILES+= varhashconsts.h condhashconsts.h nodehashconsts.h
+
+# may need tweaking if you add variable synonyms or change the hash function
+MAGICVARSLOTS=82
+MAGICCONDSLOTS=65
+
+${PROG}: ${SRCS:.c=.o} varhashconsts.h condhashconsts.h nodehashconsts.h
+
+all: ${PROG}
+
+varhashconsts.h: generate
+	./generate 1 ${MAGICVARSLOTS} >$@.tmp && mv $@.tmp $@
+
+condhashconsts.h: generate
+	./generate 2 ${MAGICCONDSLOTS} >$@.tmp && mv $@.tmp $@
+
+nodehashconsts.h: generate
+	./generate 3 0 >$@.tmp && mv $@.tmp $@
+
+generate: generate.o stats.o memory.o ohash.o reallocarray.o ${DPADD}
+	${CC} ${CFLAGS} -o generate generate.o stats.o \
+		memory.o ohash.o reallocarray.o
+
+CHECKOBJS = regress.o str.o memory.o buf.o
+
+check: ${CHECKOBJS} ${DPADD}
+	${CC} -o ${.TARGET} ${CFLAGS} ${CHECKOBJS} ${LDADD}
+
+regress: check
+	./check
+
+var.o: varhashconsts.h
+cond.o: condhashconsts.h
+targ.o parse.o: nodehashconsts.h
+
+.PHONY:		regress
