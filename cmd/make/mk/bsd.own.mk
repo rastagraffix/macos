@@ -86,27 +86,27 @@ BINMODE?=	555
 NONBINMODE?=	444
 DIRMODE?=	755
 
-SHAREDIR?=	/usr/share
+SHAREDIR?=	/usr/local/share
 SHAREGRP?=	bin
 SHAREOWN?=	root
 SHAREMODE?=	${NONBINMODE}
 
-MANDIR?=	/usr/share/man/man
+MANDIR?=	/usr/local/share/man/man
 MANGRP?=	bin
 MANOWN?=	root
 MANMODE?=	${NONBINMODE}
 
-LIBDIR?=	/usr/lib
+LIBDIR?=	/usr/local/lib
 LIBGRP?=	${BINGRP}
 LIBOWN?=	${BINOWN}
 LIBMODE?=	${NONBINMODE}
 
-DOCDIR?=	/usr/share/doc
+DOCDIR?=	/usr/local/share/doc
 DOCGRP?=	bin
 DOCOWN?=	root
 DOCMODE?=	${NONBINMODE}
 
-LOCALEDIR?=	/usr/share/locale
+LOCALEDIR?=	/usr/local/share/locale
 LOCALEGRP?=	wheel
 LOCALEOWN?=	root
 LOCALEMODE?=	${NONBINMODE}
