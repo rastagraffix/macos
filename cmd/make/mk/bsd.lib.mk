@@ -28,12 +28,6 @@ SHLIB_MINOR=${minor}
 .SUFFIXES:
 .SUFFIXES: .out .o .po .so .do .S .s .c .cc .cpp .C .cxx .f .y .l .m4 .m
 
-.if defined(NOPIE)
-CFLAGS+=	${NOPIE_FLAGS}
-CXXFLAGS+=	${NOPIE_FLAGS}
-AFLAGS+=	${NOPIE_FLAGS}
-.endif
-
 .c.o:
 	@echo "${COMPILE.c} ${.IMPSRC} -o ${.TARGET}"
 	@${COMPILE.c} ${DFLAGS} ${.IMPSRC}  -o ${.TARGET}.o

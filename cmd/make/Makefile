@@ -53,4 +53,6 @@ targ.o parse.o: nodehashconsts.h
 
 .PHONY:		regress
 
+SUBDIR = mk
+
 .include <bsd.prog.mk>

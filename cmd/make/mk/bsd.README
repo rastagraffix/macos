@@ -11,9 +11,6 @@ bsd.lib.mk		- support for building libraries
 bsd.man.mk		- installing manual pages and their links
 bsd.obj.mk		- creating 'obj' directories and cleaning up
 bsd.own.mk		- define common variables
-bsd.port.mk		- building ports (see bsd.port.mk(5)) 
-bsd.port.arch.mk	- glue for building ports with MD stuff
-bsd.port.subdir.mk	- targets for building subdirectories for ports
 bsd.prog.mk		- building programs from source files
 bsd.regress.mk		- regression tests (see bsd.regress.mk(5))
 bsd.subdir.mk		- targets for building subdirectories
@@ -229,8 +226,6 @@ NOPROFILE	Do not build profiled versions of system libraries.
 
 NOPIC		Do not build PIC versions of system libraries, and
 		do not build shared libraries.
-
-NOPIE		Do not build PIE objects or executables.
 
 DEBUG		Add -g to assembly, C compiler and linking passes.  Also
 		doesn't	set STRIP to -s per default if defined.

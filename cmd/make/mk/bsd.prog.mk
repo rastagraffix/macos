@@ -10,56 +10,12 @@
 
 .SUFFIXES: .out .o .c .cc .cpp .C .cxx .y .l .s
 
-.if (defined(LDSTATIC) && !defined(STATICPIE)) || defined(NOPIE)
-CFLAGS+=       ${NOPIE_FLAGS}
-CXXFLAGS+=     ${NOPIE_FLAGS}
-AFLAGS+=       ${NOPIE_FLAGS}
-LDFLAGS+=      ${NOPIE_LDFLAGS}
-.endif
-
 .if ${WARNINGS:L} == "yes"
-CFLAGS+=       ${CDIAGFLAGS}
-CXXFLAGS+=     ${CXXDIAGFLAGS}
+CFLAGS+=	${CDIAGFLAGS}
+CXXFLAGS+=	${CXXDIAGFLAGS}
 .endif
 CFLAGS+=	${COPTS}
-CXXFLAGS+=     ${CXXOPTS}
-
-LIBCBOR?=	${DESTDIR}/usr/lib/libcbor.a
-LIBCRYPTO?=	${DESTDIR}/usr/lib/libcrypto.a
-LIBCURSES?=	${DESTDIR}/usr/lib/libcurses.a
-LIBEDIT?=	${DESTDIR}/usr/lib/libedit.a
-LIBELF?=	${DESTDIR}/usr/lib/libelf.a
-LIBEVENT?=	${DESTDIR}/usr/lib/libevent.a
-LIBEXECINFO?=	${DESTDIR}/usr/lib/libexecinfo.a
-LIBEXPAT?=	${DESTDIR}/usr/lib/libexpat.a
-LIBFIDO2?=	${DESTDIR}/usr/lib/libfido2.a
-LIBFORM?=	${DESTDIR}/usr/lib/libform.a
-LIBFORMW?=	${DESTDIR}/usr/lib/libformw.a
-LIBKEYNOTE?=	${DESTDIR}/usr/lib/libkeynote.a
-LIBKVM?=	${DESTDIR}/usr/lib/libkvm.a
-LIBL?=		${DESTDIR}/usr/lib/libl.a
-LIBM?=		${DESTDIR}/usr/lib/libm.a
-LIBMENU?=	${DESTDIR}/usr/lib/libmenu.a
-LIBMENUW?=	${DESTDIR}/usr/lib/libmenuw.a
-LIBRADIUS?=	${DESTDIR}/usr/lib/libradius.a
-LIBOSSAUDIO?=	${DESTDIR}/usr/lib/libossaudio.a
-LIBPANEL?=	${DESTDIR}/usr/lib/libpanel.a
-LIBPANELW?=	${DESTDIR}/usr/lib/libpanelw.a
-LIBPCAP?=	${DESTDIR}/usr/lib/libpcap.a
-LIBPERL?=	${DESTDIR}/usr/lib/libperl.a
-LIBPTHREAD?=	${DESTDIR}/usr/lib/libpthread.a
-LIBRPCSVC?=	${DESTDIR}/usr/lib/librpcsvc.a
-LIBSKEY?=	${DESTDIR}/usr/lib/libskey.a
-LIBSNDIO?=	${DESTDIR}/usr/lib/libsndio.a
-LIBSSL?=	${DESTDIR}/usr/lib/libssl.a
-LIBAGENTX?=	${DESTDIR}/usr/lib/libagentx.a
-LIBTLS?=	${DESTDIR}/usr/lib/libtls.a
-LIBTERMCAP?=	${DESTDIR}/usr/lib/libtermcap.a
-LIBTERMLIB?=	${DESTDIR}/usr/lib/libtermlib.a
-LIBUSBHID?=	${DESTDIR}/usr/lib/libusbhid.a
-LIBUTIL?=	${DESTDIR}/usr/lib/libutil.a
-LIBY?=		${DESTDIR}/usr/lib/liby.a
-LIBZ?=		${DESTDIR}/usr/lib/libz.a
+CXXFLAGS+=	${CXXOPTS}
 
 .if ${MACHINE_ARCH} == "alpha" || ${MACHINE_ARCH} == "amd64" || \
     ${MACHINE_ARCH} == "arm" || ${MACHINE_ARCH} == "i386"
