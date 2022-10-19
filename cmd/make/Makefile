@@ -1,15 +1,12 @@
 BINDIR ?= /usr/local/bin
 
 PROG=	bmake
+MAN=	bmake.1 bsd.prog.mk.5
+
 CFLAGS+= -I${.OBJDIR} -I${.CURDIR}
 HOSTCFLAGS+= -I${.OBJDIR} -I${.CURDIR}
 CDIAGFLAGS=-Wall -W -Wno-char-subscripts -Wstrict-prototypes -pedantic \
 	-Wmissing-prototypes -Wdeclaration-after-statement -std=c99
-
-#CDEFS+=-DHAS_STATS
-
-CFLAGS+=${CDEFS}
-HOSTCFLAGS+=${CDEFS}
 
 SRCS=	arch.c buf.c cmd_exec.c compat.c cond.c dir.c direxpand.c dump.c \
 	engine.c enginechoice.c error.c expandchildren.c \
