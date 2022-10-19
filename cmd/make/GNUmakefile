@@ -17,7 +17,7 @@ SRCS=	arch.c buf.c cmd_exec.c compat.c cond.c dir.c direxpand.c dump.c \
 LSTSRCS = lst.lib/lstAddNew.c lst.lib/lstAppend.c lst.lib/lstConcat.c \
 	lst.lib/lstConcatDestroy.c lst.lib/lstDeQueue.c lst.lib/lstDestroy.c \
 	lst.lib/lstDupl.c lst.lib/lstFindFrom.c lst.lib/lstForEachFrom.c \
-	lst.lib/lstInit.c lst.lib/lstInsert.c lst.lib/lstMember.c \
+	lst.lib/lstInsert.c lst.lib/lstMember.c \
 	lst.lib/lstRemove.c lst.lib/lstReplace.c lst.lib/lstRequeue.c \
 	lst.lib/lstSucc.c
 
