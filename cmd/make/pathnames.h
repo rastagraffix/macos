@@ -43,5 +43,5 @@
 #define _PATH_DEFSYSMK		"sys.mk"
 #endif /* ! _PATH_DEFSYSMK */
 #ifndef _PATH_DEFSYSPATH
-#define _PATH_DEFSYSPATH	"/usr/share/mk"
+#define _PATH_DEFSYSPATH	"/usr/local/share/mk"
 #endif /* ! _PATH_DEFSYSPATH */
