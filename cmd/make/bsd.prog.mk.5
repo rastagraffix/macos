@@ -1,0 +1,129 @@
+.Dd October 19, 2022
+.Dt BSD.PROG.MK 5
+.Os
+.Sh NAME
+.Nm bsd.prog.mk
+.Nd Makefile fragment for building programs
+.Sh SYNOPSIS
+.Fd .include <bsd.prog.mk>
+.Sh DESCRIPTION
+.Nm
+contains the
+.Xr bmake 1
+framework for building programs.
+The template defines several targets and variables that
+help automate the build process.
+.Sh TARGETS
+.Bl -tag -width Ds
+.It Cm all
+Default target.
+Build the program and its manual pages.
+.It Cm clean
+Remove the program, object files, and any automatically
+generated files.
+.It Cm cleandir
+Remove all the files removed by
+.Cm clean ,
+as well as the tags file.
+.It Cm includes
+Install any header files.
+.It Cm install
+Install the program and its manual pages.
+If the default install recipe is used, the targets
+.Cm beforeinstall
+and
+.Cm afterinstall
+can be used to perform actions immediately before and
+after the install target is run.
+.It Cm tags
+Generate a tags file from the source files.
+.Sh VARIABLES
+.Pp
+Variables are used to customize build behaviour.
+Many variables have default setting that can be
+overridden if desired, such as
+.Ev CC
+and
+.Ev YACC .
+Other variables are intended to be augmented.
+One example is
+.Ev CFLAGS .
+If you directly assign a value to
+.Ev CFLAGS ,
+you will overeide the build system defaults,
+which might include compiler diagnoistic flags
+implicitly added by
+.Cm WARNINGS=Yes .
+For those variables, you should augment the defaults by appending
+to the existing settings:
+.Cm CFLAGS+=-Dfoo=bar .
+Some experimentation may be necessary to figure out which behaviour
+works best in a particular setting.
+.Bl -tag -width Ds
+.It Ev CC
+The name of the C compiler.
+.It Ev CDIAGFLAGS
+Flags appended to
+.Ev CFLAGS
+if
+.Ev WARNINGS
+is set.
+.It Ev CFLAGS
+Flags passed to the compiler for building.
+See also
+.Ev COPTS ,
+.Ev CDIAGFLAGS .
+.It Ev COPTS
+Supplementary options appended to 
+.Ev CFLAGS
+for building.
+.It Ev CXXDIAGFLAGS
+Flags appended to
+.Ev CXXFLAGS
+if
+.Ev WARNINGS
+is set.
+.It Ev CXXFLAGS
+Flags passed to the C++ compiler for building.
+.It Ev CXXOPTS
+User settings.
+Supplementary options appended to ${CXXFLAGS} for building.
+.It Ev PROG
+.Bq Required
+The name of the program to build.
+A manpage file of the name
+.Cm ${PROG}.1
+is assumed to be present.
+.It Ev SRCS
+A list of the source files from which to build the program.
+.Nm
+implicitly recognizes a number of filename suffixes,
+and invokes the corresponding compiler.
+If
+.Ev SRCS
+is not defined,
+.Cm ${PPROG}.c
+is assumed.
+.It Ev WARNINGS
+User settings.
+If set to
+.Sq Yes ,
+add
+.Ev CDIAGFLAGS
+to
+.Ev CFLAGS
+and
+.Ev CXXDIAGFLAGS
+to
+.Ev CXXFLAGS .
+.It Ev YACC
+Name of the yacc compiler.
+.El
+.Sh FILES
+.Bl -tag -width Ds
+.It Pa ../Makefile.inc
+Common Makefile fragment for a set of ports, included automatically.
+.Sh SEE ALSO
+.Xr bmake 1 ,
+.Xr cc 1 ,
+.Xr ld 1 
