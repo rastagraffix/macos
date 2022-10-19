@@ -62,7 +62,16 @@ var.o: varhashconsts.h
 cond.o: condhashconsts.h
 targ.o parse.o: nodehashconsts.h
 
+SUDO = sudo
+# Perform a minimal install of the bootstrap build. This is just
+# enough to allow a full rebuild using the bootstrapped bmake.
+install:
+	$(SUDO) install -d -m 775 -o root -g wheel /usr/local/bin
+	$(SUDO) install -d -m 775 -o root -g wheel /usr/local/share/mk
+	$(SUDO) install -m 555 -o root -g wheel bmake /usr/local/bin/bmake
+	$(SUDO) cp mk/*.mk /usr/local/share/mk
+
 clean:
 	rm -f ${PROG} ${OBJS} ${CLEANFILES}
 
-.PHONY:		regress clean
+.PHONY:		regress clean install
