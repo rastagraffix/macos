@@ -1,4 +1,4 @@
-SUBDIRS=	make rdist telnet
+SUBDIR=	make rdist telnet
 BROKEN=		nvi
 
 .include <bsd.subdir.mk>
