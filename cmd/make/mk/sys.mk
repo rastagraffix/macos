@@ -76,9 +76,8 @@ YACC?=		yacc
 YFLAGS?=	-d
 YACC.y?=	${YACC} ${YFLAGS}
 
-INSTALL?=	install
-
 CTAGS?=		/usr/bin/ctags
+INSTALL?=	install
 
 # C
 .c:
