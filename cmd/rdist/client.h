@@ -197,6 +197,9 @@ int isexec(char *, struct stat *);
 void define(char *);
 struct namelist *lookup(char *, int, struct namelist *);
 
+/* rcmdsh.c */
+int rcmdsh(char **, int, const char *, const char *, const char *, char *);
+
 /* rdist.c */
 FILE *opendist(char *);
 void docmdargs(int, char *[]);
