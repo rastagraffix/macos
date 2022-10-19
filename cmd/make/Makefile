@@ -1,6 +1,4 @@
-	$OpenBSD: Makefile,v 1.64 2020/01/13 15:41:53 espie Exp $
-
-PROG=	make
+PROG=	bmake
 CFLAGS+= -I${.OBJDIR} -I${.CURDIR}
 HOSTCFLAGS+= -I${.OBJDIR} -I${.CURDIR}
 CDIAGFLAGS=-Wall -W -Wno-char-subscripts -Wstrict-prototypes -pedantic \

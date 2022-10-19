@@ -1,6 +1,6 @@
 #	$OpenBSD: Makefile,v 1.64 2020/01/13 15:41:53 espie Exp $
 
-PROG=	make
+PROG=	bmake
 CDIAGFLAGS=-Wall -W -Wno-char-subscripts -Wstrict-prototypes -pedantic \
 	-Wmissing-prototypes -Wdeclaration-after-statement -std=c99
 
@@ -63,5 +63,6 @@ cond.o: condhashconsts.h
 targ.o parse.o: nodehashconsts.h
 
 clean:
-	rm -f ${OBJS} ${CLEANFILES}
+	rm -f ${PROG} ${OBJS} ${CLEANFILES}
+
 .PHONY:		regress clean
