@@ -24,11 +24,6 @@ CXXFLAGS+=     ${CXXDIAGFLAGS}
 CFLAGS+=	${COPTS}
 CXXFLAGS+=     ${CXXOPTS}
 
-CRTBEGIN?=       ${DESTDIR}/usr/lib/crtbegin.o
-CRTEND?=         ${DESTDIR}/usr/lib/crtend.o
-
-LIBCRT0?=	${DESTDIR}/usr/lib/crt0.o
-LIBC?=		${DESTDIR}/usr/lib/libc.a
 LIBCBOR?=	${DESTDIR}/usr/lib/libcbor.a
 LIBCRYPTO?=	${DESTDIR}/usr/lib/libcrypto.a
 LIBCURSES?=	${DESTDIR}/usr/lib/libcurses.a
@@ -93,10 +88,10 @@ SRCS += ${SRCS_$p}
 .    if defined(OBJS_$p) && !empty(OBJS_$p)
 .      if !empty(SRCS_$p:M*.C) || !empty(SRCS_$p:M*.cc) || \
 	!empty(SRCS_$p:M*.cpp) || !empty(SRCS_$p:M*.cxx)
-$p: ${LIBCRT0} ${OBJS_$p} ${LIBC} ${CRTBEGIN} ${CRTEND} ${DPADD_$p}
+$p: ${OBJS_$p} ${DPADD_$p}
 	${CXX} ${LDFLAGS} ${LDSTATIC} -o ${.TARGET} ${OBJS_$p} ${LDADD_$p}
 .      else
-$p: ${LIBCRT0} ${OBJS_$p} ${LIBC} ${CRTBEGIN} ${CRTEND} ${DPADD_$p}
+$p: ${OBJS_$p} ${DPADD_$p}
 	${CC} ${LDFLAGS} ${LDSTATIC} -o ${.TARGET} ${OBJS_$p} ${LDADD_$p}
 .      endif
 .    endif
@@ -119,10 +114,10 @@ _YACCINTM?=${SRCS:M*.y:.y=.c}
 .  if defined(OBJS) && !empty(OBJS)
 .    if !empty(SRCS:M*.C) || !empty(SRCS:M*.cc) || \
 	!empty(SRCS:M*.cpp) || !empty(SRCS:M*.cxx)
-${PROG}: ${LIBCRT0} ${OBJS} ${LIBC} ${CRTBEGIN} ${CRTEND} ${DPADD}
+${PROG}: ${OBJS} ${DPADD}
 	${CXX} ${LDFLAGS} ${LDSTATIC} -o ${.TARGET} ${OBJS} ${LDADD}
 .    else
-${PROG}: ${LIBCRT0} ${OBJS} ${LIBC} ${CRTBEGIN} ${CRTEND} ${DPADD}
+${PROG}: ${OBJS} ${DPADD}
 	${CC} ${LDFLAGS} ${LDSTATIC} -o ${.TARGET} ${OBJS} ${LDADD}
 .    endif
 .  endif	# defined(OBJS) && !empty(OBJS)
