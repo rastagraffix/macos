@@ -4,8 +4,6 @@ PROG=	make
 CDIAGFLAGS=-Wall -W -Wno-char-subscripts -Wstrict-prototypes -pedantic \
 	-Wmissing-prototypes -Wdeclaration-after-statement -std=c99
 
-CDEFS+=-DHAS_PATHS_H
-CDEFS+=-DHAS_EXTENDED_GETCWD
 #CDEFS+=-DHAS_STATS
 
 CFLAGS+=${CDEFS} -I. -Ilst.lib

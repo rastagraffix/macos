@@ -78,11 +78,7 @@
 # endif
 #endif
 
-#ifdef HAS_EXTENDED_GETCWD
 #define dogetcwd()	getcwd(NULL, 0)
-#else
-#define dogetcwd()	getcwd(emalloc(PATH_MAX), PATH_MAX)
-#endif
 
 #ifdef SYSVINCLUDE
 #define DOFEATURE_SYSVINCLUDE	FEATURE_SYSVINCLUDE
