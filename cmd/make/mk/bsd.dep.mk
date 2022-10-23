@@ -19,9 +19,6 @@ depend:
 CFLAGS += -MD -MP
 CXXFLAGS += -MD -MP
 
-# libraries need some special love
-DFLAGS += -MD -MP -MT $*.o -MT $*.po -MT $*.so -MT $*.do
-
 .if !target(tags)
 .  if defined(SRCS)
 tags: ${SRCS} _SUBDIRUSE
@@ -35,7 +32,7 @@ tags:
 # explicitly tag most source files
 .for i in ${SRCS:N*.[hyl]:N*.sh} ${_LEXINTM} ${_YACCINTM}
 # assume libraries
-${i:R:S/$/.o/} ${i:R:S/$/.po/} ${i:R:S/$/.so/} ${i:R:S/$/.do/}: $i
+${i:R:S/$/.o/} ${i:R:S/$/.po/} ${i:R:S/$/.so/}}: $i
 .endfor
 
 # give us better rules for yacc

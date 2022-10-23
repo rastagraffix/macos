@@ -23,10 +23,9 @@ SHLIB_MINOR=${minor}
 
 # prefer .S to a .c, add .po, remove stuff not used in the BSD libraries.
 # .so used for PIC object files.
-# .do used for distrib "crunchgen" object files
 # .m for objective c files.
 .SUFFIXES:
-.SUFFIXES: .out .o .po .so .do .S .s .c .cc .cpp .C .cxx .f .y .l .m4 .m
+.SUFFIXES: .out .o .po .so .S .s .c .cc .cpp .C .cxx .f .y .l .m4 .m
 
 .c.o:
 	@echo "${COMPILE.c} ${.IMPSRC} -o ${.TARGET}"
@@ -45,13 +44,6 @@ SHLIB_MINOR=${minor}
 .c.so:
 	@echo "${COMPILE.c} ${PICFLAG} -DPIC ${.IMPSRC} -o ${.TARGET}"
 	@${COMPILE.c} ${DFLAGS} ${PICFLAG} -DPIC ${.IMPSRC} -o ${.TARGET}.o
-	@-mv $@.d $*.d
-	@${LD} -X -r ${.TARGET}.o -o ${.TARGET}
-	@rm -f ${.TARGET}.o
-
-.c.do:
-	@echo "${COMPILE.c} ${DIST_CFLAGS} ${.IMPSRC} -o ${.TARGET}"
-	@${COMPILE.c} ${DFLAGS} ${DIST_CFLAGS} ${.IMPSRC}  -o ${.TARGET}.o
 	@-mv $@.d $*.d
 	@${LD} -X -r ${.TARGET}.o -o ${.TARGET}
 	@rm -f ${.TARGET}.o
@@ -121,15 +113,6 @@ SHLIB_MINOR=${minor}
 	    -o ${.TARGET}"
 	@${COMPILE.S} ${DFLAGS} -MF $@.d ${PICFLAG} -DSOLIB ${CFLAGS:M-[IDM]*} \
 	    ${AINC} ${.IMPSRC} -o ${.TARGET}.o
-	@-mv $@.d $*.d
-	@${LD} -X -r ${.TARGET}.o -o ${.TARGET}
-	@rm -f ${.TARGET}.o
-
-.S.do .s.do:
-	@echo "${COMPILE.S} ${CFLAGS:M-[ID]*} ${AINC} ${DIST_CFLAGS} \
-	    ${.IMPSRC} -o ${.TARGET}"
-	@${COMPILE.S} ${DFLAGS} -MF $@.d ${CFLAGS:M-[IDM]*} ${AINC} \
-	    ${DIST_CFLAGS} ${.IMPSRC} -o ${.TARGET}.o
 	@-mv $@.d $*.d
 	@${LD} -X -r ${.TARGET}.o -o ${.TARGET}
 	@rm -f ${.TARGET}.o
@@ -225,27 +208,6 @@ ${FULLSHLIBNAME}.a: ${SOBJS}
 	@echo -Wl,-soname,${FULLSHLIBNAME} ${PICFLAG} ${LDADD} > .ldadd
 	ar cqD ${FULLSHLIBNAME}.a ${SOBJS} .ldadd ${SYMBOLSMAP}
 
-# all .do files...
-DOBJS+=	${OBJS:.o=.do}
-BUILDAFTER += ${DOBJS}
-
-# .do files that we actually need for where this dist lib will be used
-.if defined(DIST_OBJS)
-SELECTED_DOBJS=${DIST_OBJS:.o=.do}
-.else
-SELECTED_DOBJS?=${DOBJS}
-.endif
-
-DIST_LIB?=lib${LIB}_d.a
-${DIST_LIB}: ${SELECTED_DOBJS}
-	@echo building distrib ${DIST_LIB} library from ${SELECTED_DOBJS}
-	@rm -f ${DIST_LIB}
-.if !empty(SELECTED_DOBJS)
-	@${AR} cqD ${DIST_LIB} `${LORDER} ${SELECTED_DOBJS} | tsort -q`
-.else
-	@${AR} cqD ${DIST_LIB}
-.endif
-	${RANLIB} ${DIST_LIB}
 
 .if !target(clean)
 clean: _SUBDIRUSE
@@ -255,7 +217,6 @@ clean: _SUBDIRUSE
 	rm -f lib${LIB}_g.a ${GOBJS}
 	rm -f lib${LIB}_p.a ${POBJS}
 	rm -f lib${LIB}.so.*.* ${SOBJS} .ldadd
-	rm -f ${DIST_LIB} ${DOBJS}
 .endif
 
 cleandir: _SUBDIRUSE clean

@@ -496,16 +496,3 @@ It has rules for building profiled objects; profiled libraries are
 built by default.
 
 Static libraries are ranlib'd when made.
-
-In addition, a reduced version of a library, including just specific
-objects that are compiled with additional options to reduce their
-size may be built.  This is used by the distrib/ tree and crunchgen
-when building ramdisks.  This sets/uses the following variables:
-
-DIST_LIB	The path of the library to build. [lib${LIB}_d.a]
-
-DIST_OBJS	The (sub)set of .o files to include in ${DIST_LIB}. [${OBJS}]
-
-DIST_CFLAGS	Additional flags for the C compiler and assembler.
-		[-Oz]
-
