@@ -1,4 +1,4 @@
-#	$OpenBSD: Makefile,v 1.64 2020/01/13 15:41:53 espie Exp $
+.POSIX:
 
 PROG=	bmake
 CDIAGFLAGS=-Wall -W -Wno-char-subscripts -Wstrict-prototypes -pedantic \
