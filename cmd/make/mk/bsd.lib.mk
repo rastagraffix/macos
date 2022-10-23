@@ -10,6 +10,8 @@
 
 .if exists(${.CURDIR}/shlib_version)
 .include "${.CURDIR}/shlib_version"
+.poison !defined (major)
+.poison !defined (minor)
 .if defined(LIB) && defined(LIB${LIB}_VERSION)
 SHLIB_MAJOR=${LIB${LIB}_VERSION:R}
 SHLIB_MINOR=${LIB${LIB}_VERSION:E}
