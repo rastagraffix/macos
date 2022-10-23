@@ -10,9 +10,8 @@
 
 unix=		We run MacOS.
 # Because bloody MacOS doesn't define MACHINE or MACHINE_ARCH :-P
-_m_arch		!= uname -mp
-MACHINE		?= ${_m_arch:S/ .*//}
-MACHINE_ARCH	?= ${m_arch:s/.* //}
+MACHINE		!= uname -m
+MACHINE_ARCH	!= uname -p
 
 .SUFFIXES: .out .a .o .c .cc .C .cxx .cpp .F .f .r .y .l .s .S .cl .p .h .sh .m4
 
