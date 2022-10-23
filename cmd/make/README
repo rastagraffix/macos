@@ -16,10 +16,13 @@ process:
 	2) Run 'make install'. This will install just enough
 	   pieces to allow for a full build using the just-
 	   bootstrapped binary.
-	3) Run 'make clean' followed by 'bmake'.  This will
+	3) Run 'make clean' followed by './bmake'.  This will
 	   rebuild everything (including documentation) using
 	   the full bmake infrastructure.
-	4) Run 'bmake install' to install everything.
+	4) Run './bmake install' to install everything.
+
+If you have a non-Gnu POSIX make, use 'make -f GNUmakefile'
+in the comands above.
 
 The current (Oct 2022) state of the make templates is quite
 fragile. Enough bits are working to build bmake itself, and
