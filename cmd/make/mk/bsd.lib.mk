@@ -31,42 +31,42 @@ SHLIB_MINOR=${minor}
 	@echo "${COMPILE.c} ${.IMPSRC} -o ${.TARGET}"
 	@${COMPILE.c} ${DFLAGS} ${.IMPSRC}  -o ${.TARGET}.o
 	@-mv $@.d $*.d
-	@${LD} -X -r ${.TARGET}.o -o ${.TARGET}
+	@${LD} -r ${.TARGET}.o -o ${.TARGET}
 	@rm -f ${.TARGET}.o
 
 .c.po:
 	@echo "${COMPILE.c} -p ${.IMPSRC} -o ${.TARGET}"
 	@${COMPILE.c} ${DFLAGS} -p ${.IMPSRC} -o ${.TARGET}.o
 	@-mv $@.d $*.d
-	@${LD} -X -r ${.TARGET}.o -o ${.TARGET}
+	@${LD} -r ${.TARGET}.o -o ${.TARGET}
 	@rm -f ${.TARGET}.o
 
 .c.so:
 	@echo "${COMPILE.c} ${PICFLAG} -DPIC ${.IMPSRC} -o ${.TARGET}"
 	@${COMPILE.c} ${DFLAGS} ${PICFLAG} -DPIC ${.IMPSRC} -o ${.TARGET}.o
 	@-mv $@.d $*.d
-	@${LD} -X -r ${.TARGET}.o -o ${.TARGET}
+	@${LD} -r ${.TARGET}.o -o ${.TARGET}
 	@rm -f ${.TARGET}.o
 
 .cc.o .cpp.o .C.o .cxx.o:
 	@echo "${COMPILE.cc} ${.IMPSRC} -o ${.TARGET}"
 	@${COMPILE.cc} ${DFLAGS} ${.IMPSRC} -o ${.TARGET}.o
 	@-mv $@.d $*.d
-	@${LD} -X -r ${.TARGET}.o -o ${.TARGET}
+	@${LD} -r ${.TARGET}.o -o ${.TARGET}
 	@rm -f ${.TARGET}.o
 
 .cc.po .cpp.po .C.po .cxx.po:
 	@echo "${COMPILE.cc} -p ${.IMPSRC} -o ${.TARGET}"
 	@${COMPILE.cc} ${DFLAGS} -p ${.IMPSRC} -o ${.TARGET}.o
 	@-mv $@.d $*.d
-	@${LD} -X -r ${.TARGET}.o -o ${.TARGET}
+	@${LD} -r ${.TARGET}.o -o ${.TARGET}
 	@rm -f ${.TARGET}.o
 
 .cc.so .cpp.so .C.so .cxx.so:
 	@echo "${COMPILE.cc} ${PICFLAG} -DPIC ${.IMPSRC} -o ${.TARGET}"
 	@${COMPILE.cc} ${DFLAGS} ${PICFLAG} -DPIC ${.IMPSRC} -o ${.TARGET}.o
 	@-mv $@.d $*.d
-	@${LD} -X -r ${.TARGET}.o -o ${.TARGET}
+	@${LD} -r ${.TARGET}.o -o ${.TARGET}
 	@rm -f ${.TARGET}.o
 
 # Fortran 77
@@ -74,21 +74,21 @@ SHLIB_MINOR=${minor}
 	@echo "${COMPILE.f} ${.IMPSRC} -o ${.TARGET}"
 	@${COMPILE.f} ${DFLAGS} ${.IMPSRC} -o ${.TARGET}.o
 	@-mv $@.d $*.d
-	@${LD} -X -r ${.TARGET}.o -o ${.TARGET}
+	@${LD} -r ${.TARGET}.o -o ${.TARGET}
 	@rm -f ${.TARGET}.o
 
 .f.po:
 	@echo "${COMPILE.f} -p ${.IMPSRC} -o ${.TARGET}"
 	@${COMPILE.f} ${DFLAGS} -p ${.IMPSRC} -o ${.TARGET}.o
 	@-mv $@.d $*.d
-	@${LD} -X -r ${.TARGET}.o -o ${.TARGET}
+	@${LD} -r ${.TARGET}.o -o ${.TARGET}
 	@rm -f ${.TARGET}.o
 
 .f.so:
 	@echo "${COMPILE.f} ${PICFLAG} -DPIC ${.IMPSRC} -o ${.TARGET}"
 	@${COMPILE.f} ${DFLAGS} ${PICFLAG} -DPIC ${.IMPSRC} -o ${.TARGET}.o
 	@-mv $@.d $*.d
-	@${LD} -X -r ${.TARGET}.o -o ${.TARGET}
+	@${LD} -r ${.TARGET}.o -o ${.TARGET}
 	@rm -f ${.TARGET}.o
 
 .S.o .s.o:
@@ -96,7 +96,7 @@ SHLIB_MINOR=${minor}
 	@${COMPILE.S} ${DFLAGS} -MF $@.d ${CFLAGS:M-[IDM]*} ${AINC} \
 	    ${.IMPSRC} -o ${.TARGET}.o
 	@-mv $@.d $*.d
-	@${LD} -X -r ${.TARGET}.o -o ${.TARGET}
+	@${LD} -r ${.TARGET}.o -o ${.TARGET}
 	@rm -f ${.TARGET}.o
 
 .S.po .s.po:
@@ -105,7 +105,7 @@ SHLIB_MINOR=${minor}
 	@${COMPILE.S} ${DFLAGS} -MF $@.d -DPROF ${CFLAGS:M-[IDM]*} ${AINC} \
 	    ${.IMPSRC} -o ${.TARGET}.o
 	@-mv $@.d $*.d
-	@${LD} -X -r ${.TARGET}.o -o ${.TARGET}
+	@${LD} -r ${.TARGET}.o -o ${.TARGET}
 	@rm -f ${.TARGET}.o
 
 .S.so .s.so:
@@ -114,7 +114,7 @@ SHLIB_MINOR=${minor}
 	@${COMPILE.S} ${DFLAGS} -MF $@.d ${PICFLAG} -DSOLIB ${CFLAGS:M-[IDM]*} \
 	    ${AINC} ${.IMPSRC} -o ${.TARGET}.o
 	@-mv $@.d $*.d
-	@${LD} -X -r ${.TARGET}.o -o ${.TARGET}
+	@${LD} -r ${.TARGET}.o -o ${.TARGET}
 	@rm -f ${.TARGET}.o
 
 .if ${WARNINGS:L} == "yes"
@@ -123,8 +123,6 @@ CXXFLAGS+=	${CXXDIAGFLAGS}
 .endif
 CFLAGS+=	${COPTS}
 CXXFLAGS+=	${CXXOPTS}
-
-DEBUG?=	-g
 
 _LIBS=lib${LIB}.a
 .if !defined(NOPROFILE)
