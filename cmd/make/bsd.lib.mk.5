@@ -1,0 +1,243 @@
+.Dd October 23, 2022
+.Dt BSD.LIB.MK 5
+.Os
+.Sh NAME
+.Nm bsd.lib.mk
+.Nd Makefile fragment for building libraries
+.Sh SYNOPSIS
+.Fd .include <bsd.lib.mk>
+.Sh DESCRIPTION
+.Nm
+contains the
+.Xr bmake 1
+framework for building libraries.
+It builds both static
+.Pq Ns Pa lib${LIB}.a
+and
+profiled static
+.Pq Ns Pa lib${LIB}_p.a
+versions
+of each.
+.Pp
+If the file
+.Pa shlib_version
+exists in the source directory, a shared library will
+also be built.
+The
+.Pa shlib_version
+file must define two Makefile variables:
+.Pp
+.Bl -tag -compact
+.It Ev major
+The shared library major version number.
+.It Ev minor
+The shared library minor version number.
+.El
+.Pp
+The resulting shared library will be named
+.Pa lib${LIB}.so.${major}.${minor} .
+.Pp
+The template defines several targets and variables that
+help automate the build process.
+.Sh TARGETS
+.Bl -tag -width Ds
+.It Ic all
+Default target.
+Build the library.
+.It Ic clean
+Remove the library, object files, and any automatically
+generated files.
+.It Ic cleandir
+Remove all the files removed by
+.Ic clean ,
+as well as the tags file.
+.It Ic includes
+Install any header files.
+.It Ic install
+Install the library and its manual pages.
+If the default install recipe is used, the targets
+.Ic beforeinstall
+and
+.Ic afterinstall
+can be used to perform actions immediately before and
+after the
+.Ic install
+target is run.
+.It Ic tags
+Generate a tags file from the source files.
+.El
+.Sh VARIABLES
+.Pp
+Variables are used to customize build behavior.
+Many variables have default setting that can be
+overridden if desired, such as
+.Ev CC
+and
+.Ev YACC .
+Other variables are intended to be augmented.
+One example is
+.Ev CFLAGS .
+If you directly assign a value to
+.Ev CFLAGS ,
+you will override the build system defaults,
+which might include compiler diagnostic flags
+implicitly added by
+.Ic WARNINGS=Yes .
+For those variables, you should augment the defaults by appending
+to the existing settings:
+.Ic CFLAGS+=-Dfoo=bar .
+Some experimentation might be necessary to figure out which behavior
+works best in a particular setting.
+.\"
+.Bl -tag -width Ds
+.\"
+.It Ev CC
+The name of the C compiler.
+.\"
+.It Ev CDIAGFLAGS
+Flags appended to
+.Ev CFLAGS
+when
+.Ev WARNINGS
+is set.
+.\"
+.It Ev CFLAGS
+Flags passed to the compiler for building.
+See also
+.Ev COPTS ,
+.Ev CDIAGFLAGS .
+.\"
+.It Ev CLEANFILES
+Additional files to be removed by the
+.Ic clean
+target.
+.\"
+.It Ev COPTS
+Supplementary options appended to 
+.Ev CFLAGS
+for building.
+This variable is generally reserved for the user.
+.\"
+.It Ev CXXDIAGFLAGS
+Flags appended to
+.Ev CXXFLAGS
+if
+.Ev WARNINGS
+is set.
+.\"
+.It Ev CXXFLAGS
+Flags passed to the C++ compiler for building.
+.\"
+.It Ev CXXOPTS
+Supplementary options appended to
+.Ev CXXFLAGS
+for building.
+This variable is generally reserved for the user.
+.\"
+.It Ev DEBUG
+Flags added to assembly, C[++] compiler, and linker passes.
+.\"
+.It Ev DESTDIR
+If defined, this path is prepended to pathnames of every file
+installed by the
+.Ic install
+target.
+It is mainly used to install files into a shadow directory where
+they are used to create an installation package.
+Typical usage is to specify the value on the command line
+of the installation run.
+For example, to install into the
+.Pa /tmp/foo
+directory (which must already exist):
+.Pp
+.Dl make -DDESTDIR=/tmp/foo install
+.Pp
+This convention relies on the
+.Nm bmake
+recipes prefixing all installation paths with
+.Ic ${DESTDIR}
+as follows:
+.Pp
+.Dl install ${LIB}.a ${DESTDIR}${LIBDIR}/lib${LIB}.a
+.\"
+.It Ev DPADD
+Additional dependencies for the library.
+Typically used to specify archive file dependencies.
+.\"
+.It Ev LD
+The name of the linker.
+.\"
+.It Ev LDADD
+Additional linker objects.
+.\"
+.It Ev LDFLAGS
+Additional linker flags.
+.\"
+.It Ev LEX
+The name of the lexer.
+.\"
+.It Ev LIB
+.Bq Required
+The name of the library to build.
+.\"
+.It Ev LIBDIR
+The directory where libraries are installed.
+.\"
+.It Ev LFLAGS
+Flags passed to the lexer.
+.\"
+.It Ev LINKS
+A list of file links to create during install.
+Each item should be a full pathname.
+The list contains source-file target-file pairs.
+For example, to link
+.Pa /bin/test
+and
+.Pa /bin/[
+use
+.Pp
+.Dl LINKS= ${DESTDIR}/bin/test ${DESTDIR}/bin/[
+.It Ev MAN
+The list of manual pages to install.
+.\"
+.It Ev SRCS
+.Bq Required
+A list of the source files from which to build the library.
+.Nm bsd.lib.mk
+implicitly recognizes a number of filename suffixes,
+and invokes the corresponding compiler.
+.\"
+.It Ev WARNINGS
+If set to
+.Sq Yes ,
+add
+.Ev CDIAGFLAGS
+to
+.Ev CFLAGS
+and
+.Ev CXXDIAGFLAGS
+to
+.Ev CXXFLAGS .
+.\"
+.It Ev YACC
+The name of the yacc compiler.
+.\"
+.It Ev YFLAGS
+Flags passed to the yacc compiler for building.
+.El
+.Sh FILES
+.Bl -tag -width Ds
+.It Pa ../Makefile.inc
+Common Makefile fragment for a set of libraries, included automatically.
+.It pa shlib_version
+If present, triggers the build of a shared library.
+The file must define the variables
+.Va major
+and
+.Va minor .
+.El
+.Sh SEE ALSO
+.Xr bmake 1 ,
+.Xr cc 1 ,
+.Xr ld 1 ,
+.Xr bsd.prog.mk 5
