@@ -59,41 +59,98 @@ to the existing settings:
 .Cm CFLAGS+=-Dfoo=bar .
 Some experimentation may be necessary to figure out which behaviour
 works best in a particular setting.
+.\"
 .Bl -tag -width Ds
+.\"
 .It Ev CC
 The name of the C compiler.
+.\"
 .It Ev CDIAGFLAGS
 Flags appended to
 .Ev CFLAGS
-if
+when
 .Ev WARNINGS
 is set.
+.\"
 .It Ev CFLAGS
 Flags passed to the compiler for building.
 See also
 .Ev COPTS ,
 .Ev CDIAGFLAGS .
+.\"
 .It Ev COPTS
 Supplementary options appended to 
 .Ev CFLAGS
 for building.
+.\"
+.It Ev CLEANFILES
+Additional files to be removed by
+.Cm make clean .
+.\"
 .It Ev CXXDIAGFLAGS
 Flags appended to
 .Ev CXXFLAGS
 if
 .Ev WARNINGS
 is set.
+.\"
 .It Ev CXXFLAGS
 Flags passed to the C++ compiler for building.
+.\"
 .It Ev CXXOPTS
 User settings.
 Supplementary options appended to ${CXXFLAGS} for building.
+.\"
+.It Ev DPADD
+Additional dependencies for the program.
+Typically used to specify archive file dependencies.
+.It Ev LDADD
+Additional linker objects.
+.\"
+.It Ev MAN
+The list of manual pages to install.
+Defaults to
+.Cm MAN=${PROG}.1 ${PROGS}.1 .
+.\"
 .It Ev PROG
 .Bq Required
 The name of the program to build.
 A manpage file of the name
 .Cm ${PROG}.1
 is assumed to be present.
+.\"
+.It Ev PROGS
+Allows building multiple programs in a single directory.
+For each
+.Va p
+in the
+.Ev PROGS
+list,
+.Va p
+will be built as though
+.Ev PROG= Ns Va p
+had been specified.
+.Ev SRCS_ Ns Va p
+will be used instead of
+.Ev sources
+to specify the sources.
+The variables
+.Ev SRCS_ Ns Va p ,
+.Ev OBJS_ Ns Va p ,
+.Ev DPADD_ Ns Va p ,
+and
+.Ev LDADD_ Ns Va p
+may be defined, and will override the the values of their
+corresponding unaugmented counterparts while building
+.Va p .
+.Pp
+If both
+.Ev PROG
+and
+.Ev PROGS
+are defined, both variables will be combined to create
+the list of programs to build.
+.\"
 .It Ev SRCS
 A list of the source files from which to build the program.
 .Nm
@@ -102,8 +159,9 @@ and invokes the corresponding compiler.
 If
 .Ev SRCS
 is not defined,
-.Cm ${PPROG}.c
+.Cm ${PROG}.c
 is assumed.
+.\"
 .It Ev WARNINGS
 User settings.
 If set to
@@ -116,8 +174,12 @@ and
 .Ev CXXDIAGFLAGS
 to
 .Ev CXXFLAGS .
+.\"
 .It Ev YACC
 Name of the yacc compiler.
+.\"
+.It Ev YFLAGS
+Flags passed to the yacc compiler for building.
 .El
 .Sh FILES
 .Bl -tag -width Ds
