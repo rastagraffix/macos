@@ -1,7 +1,7 @@
 BINDIR ?= /usr/local/bin
 
 PROG=	bmake
-MAN=	bmake.1 bsd.prog.mk.5
+MAN=	bmake.1 bsd.lib.mk.5 bsd.prog.mk.5
 
 CFLAGS+= -I${.OBJDIR} -I${.CURDIR}
 HOSTCFLAGS+= -I${.OBJDIR} -I${.CURDIR}
