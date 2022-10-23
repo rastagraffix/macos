@@ -13,33 +13,53 @@ contains the
 framework for building programs.
 The template defines several targets and variables that
 help automate the build process.
+.Pp
+The targets defined by
+.Nm
+deliberately avoid exposing any MacOS-specific facilities.
+This is to ensure Makefiles maintain as much compatibility
+with other BSD makes as is practical.
+If your program build makes extensive use of MacOS-specific
+tools,
+you can create your
+own
+.Nm bmake
+template files that augment or override these targets, and
+.Ic .include
+those in your Makefiles in addition to
+.Nm bsd.prog.mk .
+This ensures a clean separation between MacOS-specific and
+BSD-generic functionality.
 .Sh TARGETS
 .Bl -tag -width Ds
-.It Cm all
+.It Ic all
 Default target.
 Build the program and its manual pages.
-.It Cm clean
+.It Ic clean
 Remove the program, object files, and any automatically
 generated files.
-.It Cm cleandir
+.It Ic cleandir
 Remove all the files removed by
-.Cm clean ,
+.Ic clean ,
 as well as the tags file.
-.It Cm includes
+.It Ic includes
 Install any header files.
-.It Cm install
+.It Ic install
 Install the program and its manual pages.
 If the default install recipe is used, the targets
-.Cm beforeinstall
+.Ic beforeinstall
 and
-.Cm afterinstall
+.Ic afterinstall
 can be used to perform actions immediately before and
-after the install target is run.
-.It Cm tags
+after the
+.Ic install
+target is run.
+.It Ic tags
 Generate a tags file from the source files.
+.El
 .Sh VARIABLES
 .Pp
-Variables are used to customize build behaviour.
+Variables are used to customize build behavior.
 Many variables have default setting that can be
 overridden if desired, such as
 .Ev CC
@@ -50,14 +70,14 @@ One example is
 .Ev CFLAGS .
 If you directly assign a value to
 .Ev CFLAGS ,
-you will overeide the build system defaults,
-which might include compiler diagnoistic flags
+you will override the build system defaults,
+which might include compiler diagnostic flags
 implicitly added by
-.Cm WARNINGS=Yes .
+.Ic WARNINGS=Yes .
 For those variables, you should augment the defaults by appending
 to the existing settings:
-.Cm CFLAGS+=-Dfoo=bar .
-Some experimentation may be necessary to figure out which behaviour
+.Ic CFLAGS+=-Dfoo=bar .
+Some experimentation might be necessary to figure out which behavior
 works best in a particular setting.
 .\"
 .Bl -tag -width Ds
@@ -78,14 +98,16 @@ See also
 .Ev COPTS ,
 .Ev CDIAGFLAGS .
 .\"
+.It Ev CLEANFILES
+Additional files to be removed by the
+.Ic clean
+target.
+.\"
 .It Ev COPTS
 Supplementary options appended to 
 .Ev CFLAGS
 for building.
-.\"
-.It Ev CLEANFILES
-Additional files to be removed by
-.Cm make clean .
+This variable is generally reserved for the user.
 .\"
 .It Ev CXXDIAGFLAGS
 Flags appended to
@@ -98,25 +120,92 @@ is set.
 Flags passed to the C++ compiler for building.
 .\"
 .It Ev CXXOPTS
-User settings.
-Supplementary options appended to ${CXXFLAGS} for building.
+Supplementary options appended to
+.Ev CXXFLAGS
+for building.
+This variable is generally reserved for the user.
+.\"
+.It Ev DEBUG
+Flags added to assembly, C[++] compiler, and linker passes.
+If set, do not strip installed program binaries.
+.\"
+.It Ev DESTDIR
+If defined, this path is prepended to pathnames of every file
+installed by the
+.Ic install
+target.
+It is mainly used to install files into a shadow directory where
+they are used to create an installation package.
+Typical usage is to specify the value on the command line
+of the installation run.
+For example, to install into the
+.Pa /tmp/foo
+directory (which must already exist):
+.Pp
+.Dl make -DDESTDIR=/tmp/foo install
+.Pp
+This convention relies on the
+.Nm bmake
+recipes prefixing all installation paths with
+.Ic ${DESTDIR}
+as follows:
+.Pp
+.Dl install foo ${DESTDIR}${BINDIR}/foo
+.Pp
+Note the absence of a
+.Ql /
+between
+.Ic ${DESTDIR}
+and
+.Ic ${BINDIR} .
+This ensures
+.Ev BINDIR
+will continue to work correctly if it contains
+a relative path.
+Your own
+.Nm bmake
+recipes should follow this convention.
 .\"
 .It Ev DPADD
 Additional dependencies for the program.
 Typically used to specify archive file dependencies.
+.\"
+.It Ev LD
+The name of the linker.
+.\"
 .It Ev LDADD
 Additional linker objects.
 .\"
+.It Ev LDFLAGS
+Additional linker flags.
+.\"
+.It Ev LEX
+The name of the lexer.
+.\"
+.It Ev LFLAGS
+Flags passed to the lexer.
+.\"
+.It Ev LINKS
+A list of binary links to create during install.
+Each item should be a full pathname.
+The list contains source-file target-file pairs.
+For example, to link
+.Pa /bin/test
+and
+.Pa /bin/[
+use
+.Pp
+.Dl LINKS= ${DESTDIR}/bin/test ${DESTDIR}/bin/[
 .It Ev MAN
 The list of manual pages to install.
 Defaults to
-.Cm MAN=${PROG}.1 ${PROGS}.1 .
+.Ic MAN= ${PROG}.1 ${PROGS}.1 .
 .\"
 .It Ev PROG
 .Bq Required
 The name of the program to build.
-A manpage file of the name
-.Cm ${PROG}.1
+A manual page file of the name
+.Ic ${PROG}.1
 is assumed to be present.
 .\"
 .It Ev PROGS
@@ -132,7 +221,7 @@ will be built as though
 had been specified.
 .Ev SRCS_ Ns Va p
 will be used instead of
-.Ev sources
+.Ev SRCS
 to specify the sources.
 The variables
 .Ev SRCS_ Ns Va p ,
@@ -153,17 +242,16 @@ the list of programs to build.
 .\"
 .It Ev SRCS
 A list of the source files from which to build the program.
-.Nm
+.Nm bsd.prog.mk
 implicitly recognizes a number of filename suffixes,
 and invokes the corresponding compiler.
 If
 .Ev SRCS
 is not defined,
-.Cm ${PROG}.c
+.Ic ${PROG}.c
 is assumed.
 .\"
 .It Ev WARNINGS
-User settings.
 If set to
 .Sq Yes ,
 add
@@ -176,7 +264,7 @@ to
 .Ev CXXFLAGS .
 .\"
 .It Ev YACC
-Name of the yacc compiler.
+The name of the yacc compiler.
 .\"
 .It Ev YFLAGS
 Flags passed to the yacc compiler for building.
@@ -184,7 +272,8 @@ Flags passed to the yacc compiler for building.
 .Sh FILES
 .Bl -tag -width Ds
 .It Pa ../Makefile.inc
-Common Makefile fragment for a set of ports, included automatically.
+Common Makefile fragment for a set of programs, included automatically.
+.El
 .Sh SEE ALSO
 .Xr bmake 1 ,
 .Xr cc 1 ,
