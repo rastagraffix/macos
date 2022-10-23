@@ -81,6 +81,8 @@ Some experimentation might be necessary to figure out which behavior
 works best in a particular setting.
 .\"
 .Bl -tag -width Ds
+.It Ev BINDIR
+The directory where programs are installed.
 .\"
 .It Ev CC
 The name of the C compiler.
@@ -152,19 +154,6 @@ as follows:
 .Pp
 .Dl install foo ${DESTDIR}${BINDIR}/foo
 .Pp
-Note the absence of a
-.Ql /
-between
-.Ic ${DESTDIR}
-and
-.Ic ${BINDIR} .
-This ensures
-.Ev BINDIR
-will continue to work correctly if it contains
-a relative path.
-Your own
-.Nm bmake
-recipes should follow this convention.
 .\"
 .It Ev DPADD
 Additional dependencies for the program.
@@ -277,4 +266,5 @@ Common Makefile fragment for a set of programs, included automatically.
 .Sh SEE ALSO
 .Xr bmake 1 ,
 .Xr cc 1 ,
-.Xr ld 1 
+.Xr ld 1 ,
+.Xr bsd.lib.mk 5
