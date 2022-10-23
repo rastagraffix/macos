@@ -35,8 +35,8 @@ SHLIB_MINOR=${minor}
 	@rm -f ${.TARGET}.o
 
 .c.po:
-	@echo "${COMPILE.c} -p ${.IMPSRC} -o ${.TARGET}"
-	@${COMPILE.c} ${DFLAGS} -p ${.IMPSRC} -o ${.TARGET}.o
+	@echo "${COMPILE.c} -pg ${.IMPSRC} -o ${.TARGET}"
+	@${COMPILE.c} ${DFLAGS} -pg ${.IMPSRC} -o ${.TARGET}.o
 	@-mv $@.d $*.d
 	@${LD} -r ${.TARGET}.o -o ${.TARGET}
 	@rm -f ${.TARGET}.o
@@ -56,8 +56,8 @@ SHLIB_MINOR=${minor}
 	@rm -f ${.TARGET}.o
 
 .cc.po .cpp.po .C.po .cxx.po:
-	@echo "${COMPILE.cc} -p ${.IMPSRC} -o ${.TARGET}"
-	@${COMPILE.cc} ${DFLAGS} -p ${.IMPSRC} -o ${.TARGET}.o
+	@echo "${COMPILE.cc} -pg ${.IMPSRC} -o ${.TARGET}"
+	@${COMPILE.cc} ${DFLAGS} -pg ${.IMPSRC} -o ${.TARGET}.o
 	@-mv $@.d $*.d
 	@${LD} -r ${.TARGET}.o -o ${.TARGET}
 	@rm -f ${.TARGET}.o
@@ -78,8 +78,8 @@ SHLIB_MINOR=${minor}
 	@rm -f ${.TARGET}.o
 
 .f.po:
-	@echo "${COMPILE.f} -p ${.IMPSRC} -o ${.TARGET}"
-	@${COMPILE.f} ${DFLAGS} -p ${.IMPSRC} -o ${.TARGET}.o
+	@echo "${COMPILE.f} -pg ${.IMPSRC} -o ${.TARGET}"
+	@${COMPILE.f} ${DFLAGS} -pg ${.IMPSRC} -o ${.TARGET}.o
 	@-mv $@.d $*.d
 	@${LD} -r ${.TARGET}.o -o ${.TARGET}
 	@rm -f ${.TARGET}.o
