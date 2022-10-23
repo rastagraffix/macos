@@ -165,7 +165,7 @@ BUILDAFTER += ${OBJS}
 lib${LIB}.a: ${OBJS}
 	@echo building standard ${LIB} library
 	@rm -f lib${LIB}.a
-	@${AR} cqD lib${LIB}.a `${LORDER} ${OBJS} | tsort -q`
+	@${AR} cq lib${LIB}.a `${LORDER} ${OBJS} | tsort -q`
 	${RANLIB} lib${LIB}.a
 
 POBJS+=	${OBJS:.o=.po}
@@ -174,7 +174,7 @@ BUILDAFTER += ${POBJS}
 lib${LIB}_p.a: ${POBJS}
 	@echo building profiled ${LIB} library
 	@rm -f lib${LIB}_p.a
-	@${AR} cqD lib${LIB}_p.a `${LORDER} ${POBJS} | tsort -q`
+	@${AR} cq lib${LIB}_p.a `${LORDER} ${POBJS} | tsort -q`
 	${RANLIB} lib${LIB}_p.a
 
 SOBJS+=	${OBJS:.o=.so}
@@ -204,7 +204,7 @@ ${FULLSHLIBNAME}.a: ${SOBJS}
 	@echo building shared ${LIB} library \(version ${SHLIB_MAJOR}.${SHLIB_MINOR}\) ar
 	@rm -f ${.TARGET}
 	@echo -Wl,-soname,${FULLSHLIBNAME} ${PICFLAG} ${LDADD} > .ldadd
-	ar cqD ${FULLSHLIBNAME}.a ${SOBJS} .ldadd ${SYMBOLSMAP}
+	ar cq ${FULLSHLIBNAME}.a ${SOBJS} .ldadd ${SYMBOLSMAP}
 
 
 .if !target(clean)
