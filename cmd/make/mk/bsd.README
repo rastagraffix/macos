@@ -12,7 +12,6 @@ bsd.man.mk		- installing manual pages and their links
 bsd.obj.mk		- creating 'obj' directories and cleaning up
 bsd.own.mk		- define common variables
 bsd.prog.mk		- building programs from source files
-bsd.regress.mk		- regression tests (see bsd.regress.mk(5))
 bsd.subdir.mk		- targets for building subdirectories
 bsd.sys.mk		- overrides for <sys.mk> for building OpenBSD
 sys.mk			- global default rules, mostly POSIX

@@ -81,9 +81,6 @@ realinstall: beforeinstall _SUBDIRUSE
 $t: _SUBDIRUSE
 .  endif
 .endfor
-.if !target(regress) && empty(.TARGETS:Mall)
-regress: _SUBDIRUSE
-.endif
 .if !target(clean) && empty(.TARGETS:Mcleandir)
 clean: _SUBDIRUSE
 .endif

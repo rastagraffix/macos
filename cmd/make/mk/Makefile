@@ -5,7 +5,7 @@ BINDIR ?= /usr/local/share
 
 FILES=	bsd.README bsd.dep.mk bsd.lib.mk bsd.man.mk \
 	bsd.obj.mk bsd.own.mk bsd.prog.mk \
-	bsd.regress.mk bsd.subdir.mk bsd.sys.mk sys.mk
+	bsd.subdir.mk bsd.sys.mk sys.mk
 NOOBJ=	noobj
 
 install:
