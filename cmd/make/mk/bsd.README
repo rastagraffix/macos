@@ -13,7 +13,6 @@ bsd.obj.mk		- creating 'obj' directories and cleaning up
 bsd.own.mk		- define common variables
 bsd.prog.mk		- building programs from source files
 bsd.subdir.mk		- targets for building subdirectories
-bsd.sys.mk		- overrides for <sys.mk> for building OpenBSD
 sys.mk			- global default rules, mostly POSIX
 
 Note, this file is not intended to replace reading through the .mk
@@ -96,11 +95,6 @@ The include file <sys.mk> has the default rules for all makes, in the BSD
 environment or otherwise.  You probably don't want to touch this file.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-
-The include file <bsd.sys.mk> is used by <bsd.prog.mk> and
-<bsd.lib.mk>.  It overrides parts of <sys.mk> for building the
-OpenBSD source tree.  For example, it contains a better yacc(1)
-rule assigning the proper names to all output files.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
