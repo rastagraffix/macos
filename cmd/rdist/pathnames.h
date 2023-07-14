@@ -36,6 +36,8 @@
 
 #include "config.h"
 
+#define _PATH_SSH "ssh"
+
 #if	!defined(_RDIST_TMP)
 #	define _RDIST_TMP	"rdistXXXXXXXX"		/* Temporary file */
 #endif	/* _RDIST_TMP */

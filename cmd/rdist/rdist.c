@@ -266,7 +266,7 @@ main(int argc, char **argv, char **envp)
 		if ((cp = getenv("RSH")) != NULL && *cp != '\0')
 			path_remsh = cp;
 		else
-			path_remsh = _PATH_RSH;
+			path_remsh = _PATH_SSH;
 	}
 
 	/*
