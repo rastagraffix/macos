@@ -2,3 +2,4 @@
 *.o
 gram.c
 gram.h
+tags
