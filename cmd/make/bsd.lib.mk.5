@@ -27,12 +27,14 @@ The
 .Pa shlib_version
 file must define two Makefile variables:
 .Pp
+.Bd -indent
 .Bl -tag -compact
 .It Ev major
 The shared library major version number.
 .It Ev minor
 The shared library minor version number.
 .El
+.Ed
 .Pp
 The resulting shared library will be named
 .Pa lib${LIB}.so.${major}.${minor} .
