@@ -1,0 +1,8 @@
+*.d
+*.o
+condhashconsts.h
+nodehashconsts.h
+varhashconsts.h
+bmake
+generate
+PSD.doc/tutorial.ps

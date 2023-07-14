@@ -1,0 +1,42 @@
+This is Berkeley Make, imported from OpenBSD 7.1.
+
+The changes are minimal:
+
+	* renamed from make -> bmake to avoid conflict with
+	  the MacOS make.
+	* rebase everything from /usr -> /usr/local (binaries,
+	  man pages, make templates).
+	* remove OpenBSD-specific bits that don't applyy here
+	  (bsd.port*.mk, bsd.x*.mk, much internal *.mk goop).
+
+A gmake-compatible makefile has been included in Makefile.bootstrap
+to assist bootstrapping the initial installation of bmake. It might
+also work with a non-Gnu POSIX compliant make, but that hasn't been
+tested.
+
+	1) Run 'make -f Makefile.bootstrap'.  This will perform
+	   a minimal build.
+	2) Run 'make -f Makefile.bootstrap install'.  This will
+	   install just enough pieces to allow for a full build
+	   using the just-bootstrapped binary.
+	3) Run 'make -f Makefile.bootstrap clean' followed by
+	   './bmake'.  This will rebuild everything (including
+	   documentation) using the full bmake infrastructure.
+	4) Run './bmake install' to install everything.
+
+Alternatively, typing 'sh bootstrap' will run the steps
+above after after cleaning out ALL THE TEMPLATE FILES in
+/usr/local/share/mk.  USE WITH CAUTION!
+
+If you have a non-Gnu POSIX make, use 'make -f GNUmakefile'
+in the comands above.
+
+The current (Oct 2022) state of the make templates is quite
+fragile. Enough bits are working to build bmake itself, and
+most simple things that rely only on <bsd.prog.mk> should
+work. I haven't tackled <bsd.lib.mk> yet.
+
+Note: I will not be adding esoteric support for every last
+thing Xcode supports. My goal is to provide an environment
+that allows you to build general purpose native BSD software
+on MacOS.

@@ -1,7 +1,4 @@
-SUBDIRS=	rdist telnet
+SUBDIR=	make rdist telnet
 BROKEN=		nvi
 
-default: all
-
-all install clean:
-	@for i in $(SUBDIRS); do (echo "===>" $$i; cd $$i && $(MAKE) $@); done
+.include <bsd.subdir.mk>

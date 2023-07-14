@@ -32,22 +32,11 @@
 
 PROG=		telnet
 
-BINDIR=		/usr/local/bin
 CFLAGS+=	-DKLUDGELINEMODE
 CFLAGS+=	-Wall
 LDFLAGS+=	-lcurses
-MAN1DIR=	/usr/local/share/man/man1
 
-OBJS=	commands.o main.o network.o ring.o sys_bsd.o telnet.o \
-	terminal.o utilities.o genget.o reallocarray.o
+SRCS=	commands.c main.c network.c ring.c sys_bsd.c telnet.c \
+	terminal.c utilities.c genget.c reallocarray.c
 
-all: $(PROG)
-
-$(PROG): $(OBJS)
-
-install:
-	install -m 555 $(PROG) $(BINDIR)/$(PROG)
-	install -m 444 $(PROG).1 $(MAN1DIR)/$(PROG).1
-
-clean:
-	rm -f $(OBJS) $(PROG)
+.include <bsd.prog.mk>

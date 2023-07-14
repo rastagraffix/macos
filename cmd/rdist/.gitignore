@@ -1,0 +1,4 @@
+*.d
+*.o
+gram.c
+gram.h

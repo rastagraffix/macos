@@ -18,6 +18,7 @@ static const char sccsid[] = "@(#)cl_main.c	10.36 (Berkeley) 10/14/96";
 
 #include <bitstring.h>
 #include <curses.h>
+#include <term.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <signal.h>

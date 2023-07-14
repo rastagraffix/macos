@@ -49,6 +49,8 @@
 #include      <unistd.h>
 #include      "pathnames.h"
 
+#include "client.h"
+
 #ifndef _PW_BUF_LEN
 # define _PW_BUF_LEN 4096
 #endif
@@ -59,7 +61,7 @@
  * avoid having to be root.  Note that rport is ignored.
  */
 int
-rcmdsh(char **ahost, int rport, const char *locuser, const char *remuser,
+rcmdsh(char **ahost, int rport, const char *luser, const char *remuser,
     const char *cmd, char *rshprog)
 {
 	static char hbuf[MAXHOSTNAMELEN+1];
@@ -73,10 +75,10 @@ rcmdsh(char **ahost, int rport, const char *locuser, const char *remuser,
 	if (rshprog == NULL)
 		rshprog = _PATH_SSH;
 
-	/* locuser must exist on this host. */
-	getpwnam_r(locuser, &pwstore, pwbuf, sizeof(pwbuf), &pw);
+	/* luser must exist on this host. */
+	getpwnam_r(luser, &pwstore, pwbuf, sizeof(pwbuf), &pw);
 	if (pw == NULL) {
-		(void) fprintf(stderr, "rcmdsh: unknown user: %s\n", locuser);
+		(void) fprintf(stderr, "rcmdsh: unknown user: %s\n", luser);
 		return(-1);
 	}
 
@@ -133,7 +135,7 @@ rcmdsh(char **ahost, int rport, const char *locuser, const char *remuser,
 		 * If remote host is "localhost" and local and remote user
 		 * are the same, avoid running remote shell for efficiency.
 		 */
-		if (!strcmp(*ahost, "localhost") && !strcmp(locuser, remuser)) {
+		if (!strcmp(*ahost, "localhost") && !strcmp(luser, remuser)) {
 			char *argv[4];
 			if (pw->pw_shell[0] == '\0')
 				rshprog = _PATH_BSHELL;

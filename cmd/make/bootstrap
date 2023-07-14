@@ -1,0 +1,18 @@
+# Full bootstrap of bmake.  This is DESTRUCTIVE!  It will clean
+# out the contents of /usr/local/share/mk!  BEWARE!!!
+
+BOOT=Makefile.bootstrap
+
+if [ -d /usr/local/share/mk ]; then
+	rm -f /usr/local/share/mk/*.mk
+fi
+
+make -f ${BOOT} clean
+make -f ${BOOT} all
+make -f ${BOOT} install
+make -f ${BOOT} clean
+rm -rf ./obj
+bmake clean
+bmake obj
+bmake all
+sudo bmake install
