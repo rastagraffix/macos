@@ -47,6 +47,7 @@
 #include      <pwd.h>
 #include      <paths.h>
 #include      <unistd.h>
+#include      "pathnames.h"
 
 #ifndef _PW_BUF_LEN
 # define _PW_BUF_LEN 4096
@@ -70,7 +71,7 @@ rcmdsh(char **ahost, int rport, const char *locuser, const char *remuser,
 
 	/* What rsh/shell to use. */
 	if (rshprog == NULL)
-		rshprog = _PATH_RSH;
+		rshprog = _PATH_SSH;
 
 	/* locuser must exist on this host. */
 	getpwnam_r(locuser, &pwstore, pwbuf, sizeof(pwbuf), &pw);
