@@ -47,6 +47,7 @@
 #include      <pwd.h>
 #include      <paths.h>
 #include      <unistd.h>
+#include      "pathnames.h"
 
 #include "client.h"
 
@@ -72,7 +73,7 @@ rcmdsh(char **ahost, int rport, const char *luser, const char *remuser,
 
 	/* What rsh/shell to use. */
 	if (rshprog == NULL)
-		rshprog = _PATH_RSH;
+		rshprog = _PATH_SSH;
 
 	/* luser must exist on this host. */
 	getpwnam_r(luser, &pwstore, pwbuf, sizeof(pwbuf), &pw);

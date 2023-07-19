@@ -21,7 +21,7 @@
  *
  * If no integral type can hold a character, don't even try the port.
  */
-typedef	char		CHAR_T;
+typedef	u_char		CHAR_T;
 typedef	u_int		ARG_CHAR_T;
 #define	MAX_CHAR_T	0xff
 

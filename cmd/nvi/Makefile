@@ -77,7 +77,7 @@ SRCS+=	getc.c v_at.c v_ch.c v_cmd.c v_delete.c v_ex.c v_increment.c v_init.c \
 SRCS+=	vs_line.c vs_msg.c vs_refresh.c vs_relative.c vs_smap.c vs_split.c
 
 FILES=	${CATALOGS:S;^;${SRCDIR}/catalog/;}
-FILESDIR= /usr/share/vi/catalog
+FILESDIR= /usr/local/share/vi/catalog
 SYMLINKS=
 .for l in ${NLLINKS}
 SYMLINKS+= dutch ${FILESDIR}/$l.ISO8859-1
