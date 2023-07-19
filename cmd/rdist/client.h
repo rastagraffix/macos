@@ -43,7 +43,7 @@
 #include "defs.h"
 
 	/* lexical definitions */
-#define	QUOTECHAR	160U	/* quote next character */
+#define	QUOTECHAR	(char)160	/* quote next character */
 
 	/* table sizes */
 #define HASHSIZE	1021
@@ -172,13 +172,13 @@ void docmds(struct namelist *, int, char **);
 
 /* expand.c */
 struct namelist *expand(struct namelist *, int);
-u_char *xstrchr(u_char *, int);
-void expstr(u_char *);
-void expsh(u_char *);
+char *xstrchr(char *, int);
+void expstr(char *);
+void expsh(char *);
 void matchdir(char *);
-int execbrc(u_char *, u_char *);
+int execbrc(char *, char *);
 int match(char *, char *);
-int amatch(char *, u_char *);
+int amatch(char *, char *);
 
 /* gram.c */
 int yylex(void);

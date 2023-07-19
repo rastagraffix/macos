@@ -188,7 +188,7 @@ void lostconn(void);
 void coredump(void);
 void sighandler(int);
 int sendcmd(char, const char *, ...) __attribute__((__format__ (printf, 2, 3)));
-int remline(u_char *, int, int);
+int remline(char *, int, int);
 ssize_t readrem(char *, ssize_t);
 char *getusername(uid_t, char *, opt_t);
 char *getgroupname(gid_t, char *, opt_t);

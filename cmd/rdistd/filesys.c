@@ -424,8 +424,8 @@ getfilesysinfo(char *file, int64_t *freespace, int64_t *freefiles)
 	*freespace = val;
 
 	val = -1;
-	if (statfsbuf.f_favail >= 0)
-		val = statfsbuf.f_favail;
+	if (statfsbuf.f_ffree >= 0)
+		val = statfsbuf.f_ffree;
 	*freefiles = val;
 
 	return(0);

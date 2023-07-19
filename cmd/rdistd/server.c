@@ -42,6 +42,7 @@
 #include <unistd.h>
 
 #include "server.h"
+#include "pwcache.h"
 
 /*
  * Server routines
@@ -1293,7 +1294,9 @@ setconfig(char *cmd)
 		if (!fromhost) {
 			fromhost = xstrdup(cp);
 			message(MT_SYSLOG, "startup for %s", fromhost);
+#if defined(SETARGS)
 			setproctitle("serving %s", cp);
+#endif
 		}
 		break;
 

@@ -62,12 +62,12 @@ char 	       *argvbuf[MAXEARGS];
 #define sort()	qsort((char *)sortbase, &eargv[eargc] - sortbase, \
 		      sizeof(*sortbase), argcmp), sortbase = &eargv[eargc]
 
-static void Cat(u_char *, u_char *);
+static void Cat(char *, char *);
 static void addpath(int);
 static int argcmp(const void *, const void *);
 
 static void
-Cat(u_char *s1, u_char *s2)		/* quote in s1 and s2 */
+Cat(char *s1, char *s2)		/* quote in s1 and s2 */
 {
 	char *cp;
 	int len = strlen((char *)s1) + strlen((char *)s2) + 2;
@@ -138,7 +138,7 @@ expand(struct namelist *list, int wh)		/* quote in list->n_name */
 	 * Walk the name list and expand names into eargv[];
 	 */
 	for (nl = list; nl != NULL; nl = nl->n_next)
-		expstr((u_char *)nl->n_name);
+		expstr((char *)nl->n_name);
 	/*
 	 * Take expanded list of names from eargv[] and build a new list.
 	 */
@@ -159,12 +159,12 @@ expand(struct namelist *list, int wh)		/* quote in list->n_name */
 
 /*
  * xstrchr() is a version of strchr() that
- * handles u_char buffers.
+ * handles char buffers.
  */
-u_char *
-xstrchr(u_char *str, int ch)
+char *
+xstrchr(char *str, int ch)
 {
-	u_char *cp;
+	char *cp;
 
 	for (cp = str; cp && *cp != CNULL; ++cp)
 		if (ch == *cp)
@@ -174,13 +174,13 @@ xstrchr(u_char *str, int ch)
 }
 
 void
-expstr(u_char *s)
+expstr(char *s)
 {
-	u_char *cp, *cp1;
+	char *cp, *cp1;
 	struct namelist *tp;
-	u_char *tail;
-	u_char ebuf[BUFSIZ];
-	u_char varbuff[BUFSIZ];
+	char *tail;
+	char ebuf[BUFSIZ];
+	char varbuff[BUFSIZ];
 	int savec, oeargc;
 
 	if (s == NULL || *s == CNULL)
@@ -255,7 +255,7 @@ expstr(u_char *s)
 	}
 	if ((which & ~E_VARS) == 0 || !strcmp((char *)s, "{") || 
 	    !strcmp((char *)s, "{}")) {
-		Cat(s, (u_char *)"");
+		Cat(s, (char *)"");
 		sort();
 		return;
 	}
@@ -277,9 +277,9 @@ expstr(u_char *s)
 	*pathp = CNULL;
 	if (!(which & E_SHELL)) {
 		if (which & E_TILDE)
-			Cat((u_char *)path, s);
+			Cat((char *)path, s);
 		else
-			Cat((u_char *)tilde, s);
+			Cat((char *)tilde, s);
 		sort();
 		return;
 	}
@@ -287,7 +287,7 @@ expstr(u_char *s)
 	expany = 0;
 	expsh(s);
 	if (eargc == oeargc)
-		Cat(s, (u_char *)"");		/* "nonomatch" is set */
+		Cat(s, (char *)"");		/* "nonomatch" is set */
 	sort();
 }
 
@@ -304,9 +304,9 @@ argcmp(const void *v1, const void *v2)
  * expand into a list, after searching directory
  */
 void
-expsh(u_char *s)			/* quote in s */
+expsh(char *s)			/* quote in s */
 {
-	u_char *cp, *oldcp;
+	char *cp, *oldcp;
 	char *spathp;
 	struct stat stb;
 
@@ -316,9 +316,9 @@ expsh(u_char *s)			/* quote in s */
 		if (*cp == CNULL) {
 			if (!expany || stat(path, &stb) >= 0) {
 				if (which & E_TILDE)
-					Cat((u_char *)path, (u_char *)"");
+					Cat((char *)path, (char *)"");
 				else
-					Cat((u_char *)tilde, (u_char *)tpathp);
+					Cat((char *)tilde, (char *)tpathp);
 			}
 			goto endit;
 		}
@@ -363,11 +363,11 @@ matchdir(char *pattern)			/* quote in pattern */
 	while ((dp = readdir(dirp)) != NULL)
 		if (match(dp->d_name, pattern)) {
 			if (which & E_TILDE)
-				Cat((u_char *)path, (u_char *)dp->d_name);
+				Cat((char *)path, (char *)dp->d_name);
 			else {
 				(void) strlcpy(pathp, dp->d_name,
 				    lastpathp - pathp + 2);
-				Cat((u_char *)tilde, (u_char *)tpathp);
+				Cat((char *)tilde, (char *)tpathp);
 				*pathp = CNULL;
 			}
 		}
@@ -383,12 +383,12 @@ patherr2:
 }
 
 int
-execbrc(u_char *p, u_char *s)		/* quote in p */
+execbrc(char *p, char *s)		/* quote in p */
 {
-	u_char restbuf[BUFSIZ + 2];
-	u_char *pe, *pm, *pl;
+	char restbuf[BUFSIZ + 2];
+	char *pe, *pm, *pl;
 	int brclev = 0;
-	u_char *lm, savec;
+	char *lm, savec;
 	char *spathp;
 
 	for (lm = restbuf; *p != '{'; *lm++ = *p++)
@@ -493,7 +493,7 @@ match(char *s, char *p)				/* quote in p */
 }
 
 int
-amatch(char *s, u_char *p)			/* quote in p */
+amatch(char *s, char *p)			/* quote in p */
 {
 	int scc;
 	int ok, lc;
@@ -507,7 +507,7 @@ amatch(char *s, u_char *p)			/* quote in p */
 		switch (c = *p++) {
 
 		case '{':
-			return (execbrc((u_char *)p - 1, (u_char *)s - 1));
+			return (execbrc((char *)p - 1, (char *)s - 1));
 
 		case '[':
 			ok = 0;
@@ -569,11 +569,11 @@ slash:
 			if (stat(path, &stb) == 0 && S_ISDIR(stb.st_mode)) {
 				if (*p == CNULL) {
 					if (which & E_TILDE) {
-						Cat((u_char *)path, 
-						    (u_char *)"");
+						Cat((char *)path, 
+						    (char *)"");
 					} else {
-						Cat((u_char *)tilde, 
-						    (u_char *)tpathp);
+						Cat((char *)tilde, 
+						    (char *)tpathp);
 					}
 				} else
 					expsh(p);

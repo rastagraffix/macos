@@ -288,7 +288,7 @@ makeconn(char *rhost)
 	char *ruser, *cp;
 	static char *cur_host = NULL;
 	char tuser[BUFSIZ], buf[BUFSIZ];
-	u_char respbuff[BUFSIZ];
+	char respbuff[BUFSIZ];
 	int n;
 
 	debugmsg(DM_CALL, "makeconn(%s)", rhost);

@@ -57,7 +57,7 @@
 
 struct	linkbuf *ihead = NULL;	/* list of files with more than one link */
 char	buf[BUFSIZ];		/* general purpose buffer */
-u_char	respbuff[BUFSIZ];	/* Response buffer */
+char	respbuff[BUFSIZ];	/* Response buffer */
 char	target[BUFSIZ];		/* target/source directory name */
 char	source[BUFSIZ];		/* source directory name */
 char	*ptarget;		/* pointer to end of target name */
@@ -488,7 +488,7 @@ sendfile(char *rname, opt_t opts, struct stat *stb, char *user,
 static int
 rmchk(opt_t opts)
 {
-	u_char *s;
+	char *s;
 	struct stat stb;
 	int didupdate = 0;
 	int n;
@@ -657,7 +657,7 @@ sendlink(char *rname, opt_t opts, struct stat *stb, char *user,
 	int f, n;
 	static char tbuf[BUFSIZ];
 	char lbuf[PATH_MAX];
-	u_char *s;
+	char *s;
 	char ername[PATH_MAX*4];
 
 	debugmsg(DM_CALL, "sendlink(%s, %#x, stb, %d)\n", rname, opts, destdir);
@@ -776,7 +776,7 @@ update(char *rname, opt_t opts, struct stat *statp)
 	unsigned short rmode;
 	char *owner = NULL, *group = NULL;
 	int done, n;
-	u_char *cp;
+	char *cp;
 	char ername[PATH_MAX*4];
 
 	debugmsg(DM_CALL, "update(%s, %#x, %p)\n", rname, opts, statp);

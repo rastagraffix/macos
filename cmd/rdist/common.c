@@ -80,7 +80,7 @@ char			defowner[64] = "bin";	/* Default owner */
 char			defgroup[64] = "bin";	/* Default group */
 
 static int sendcmdmsg(int, char *, size_t);
-static ssize_t remread(int, u_char *, size_t);
+static ssize_t remread(int, char *, size_t);
 static int remmore(void);
 
 /* 
@@ -304,8 +304,8 @@ sendcmd(char cmd, const char *fmt, ...)
 /*
  * Internal variables and routines for reading lines from the remote.
  */
-static u_char rembuf[BUFSIZ];
-static u_char *remptr;
+static char rembuf[BUFSIZ];
+static char *remptr;
 static ssize_t remleft;
 
 #define remc() (--remleft < 0 ? remmore() : *remptr++)
@@ -314,7 +314,7 @@ static ssize_t remleft;
  * Back end to remote read()
  */
 static ssize_t 
-remread(int fd, u_char *buf, size_t bufsiz)
+remread(int fd, char *buf, size_t bufsiz)
 {
 	return(read(fd, (char *)buf, bufsiz));
 }
@@ -346,10 +346,10 @@ remmore(void)
  * the third argument is nonzero, this routine never returns failure.
  */
 int
-remline(u_char *buffer, int space, int doclean)
+remline(char *buffer, int space, int doclean)
 {
 	int c, left = space;
-	u_char *p = buffer;
+	char *p = buffer;
 
 	if (rem_r < 0) {
 		error("Cannot read remote input: Remote descriptor not open.");
@@ -522,8 +522,8 @@ getgroupname(gid_t gid, char *file, opt_t opts)
 int
 response(void)
 {
-	static u_char resp[BUFSIZ];
-	u_char *s;
+	static char resp[BUFSIZ];
+	char *s;
 	int n;
 
 	debugmsg(DM_CALL, "response() start\n");

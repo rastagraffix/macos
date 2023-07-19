@@ -73,7 +73,7 @@ mntent_t *
 getmountent(void)
 {
 	static mntent_t mntstruct;
-	static char remote_dev[HOST_NAME_MAX+1 + PATH_MAX + 1];
+	static char remote_dev[MAXHOSTNAMELEN+1 + PATH_MAX + 1];
 
 	if (!entries_left)
 		return (NULL);
