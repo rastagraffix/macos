@@ -42,6 +42,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include "pwcache.h"
 
 /*
  * Constants and data structures used to implement group and password file
@@ -199,7 +200,7 @@ grptb_start(void)
  * Return:
  *	Pointer to stored name (or a empty string)
  */
-const char *
+char *
 user_from_uid(uid_t uid, int noname)
 {
 	struct passwd pwstore, *pw = NULL;
@@ -260,7 +261,7 @@ user_from_uid(uid_t uid, int noname)
  * Return:
  *	Pointer to stored name (or a empty string)
  */
-const char *
+char *
 group_from_gid(gid_t gid, int noname)
 {
 	struct group grstore, *gr = NULL;
