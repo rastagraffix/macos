@@ -1,9 +1,14 @@
 This project contains replacements for things Apple has stupidly
 removed from MacOS.
 
-Things install under /usr/local.  Run 'make dirs' once to
-create any missing directories.  This is targetted at developers,
-so you're expected to figure out the rest on your own.
+Things install under /usr/local.  The first time you build the
+software, perform the following steps (as root):
+
+  # make dirs
+  # cd cmd/make && sh bootstrap
+
+This will build and install bmake - the BSD make(1).  All the
+Makefiles in this tree use bmake to build.
 
 The 'mediascripts' directory contains some old Applescript utilities
 I wrote for my EyeTV tuner.  That device has been out of support for
