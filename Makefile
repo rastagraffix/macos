@@ -8,3 +8,4 @@ all install clean:
 dirs:
 	mkdir -p /usr/local/bin
 	mkdir -p /usr/local/share/man/man1
+	mkdir -p /usr/local/share/man/man5
