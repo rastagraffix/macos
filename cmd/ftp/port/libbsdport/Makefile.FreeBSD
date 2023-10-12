@@ -1,0 +1,65 @@
+#	@(#)Makefile	8.1 (Berkeley) 6/4/93
+# $FreeBSD: src/lib/libedit/Makefile,v 1.18 1999/10/03 10:41:40 marcel Exp $
+
+.include "../../Makefile.inc"
+
+CC= gcc
+LN= /bin/ln -s
+
+LIB=	bsdport
+CONTRIBPATH= ${.CURDIR}/../../contrib/libbsdport
+OPT_CFLAGS=	-Wall -O2 -Wno-unused -Wno-uninitialized
+
+.if defined(BSDTYPE) && ( ${BSDTYPE} == "NetBSD" )
+## libc parts
+SRCS=	reallocf.o
+LIBCPATH= ${CONTRIBPATH}/libc
+
+## libutil parts
+SRCS+=	realhostname.o trimdomain.o
+UTILHDRS=	libutil.h
+LIBUTILPATH= ${CONTRIBPATH}/libutil
+.endif
+
+## libmd parts
+SRCS+=	md5hl.o
+LIBMDPATH= ${CONTRIBPATH}/libmd
+
+## common part of Makefile
+CFLAGS+= ${OPT_CFLAGS} -I. -I${.CURDIR} -I../../port
+#HDRS=
+#CLEANFILES=
+
+all: headers ${SRCS} lib${LIB}.a
+
+headers: /dev/null
+
+.if defined(BSDTYPE) && ( ${BSDTYPE} == "NetBSD" )
+reallocf.o: ${LIBCPATH}/stdlib/reallocf.c
+	$(CC) -c ${CFLAGS} ${LDADD} ${LIBCPATH}/stdlib/reallocf.c
+
+realhostname.o: ${LIBUTILPATH}/realhostname.c
+	$(CC) -c ${CFLAGS} ${LDADD} ${LIBUTILPATH}/realhostname.c
+
+trimdomain.o: ${LIBUTILPATH}/trimdomain.c
+	$(CC) -c ${CFLAGS} ${LDADD} ${LIBUTILPATH}/trimdomain.c
+.endif
+
+md5hl.o: ${LIBMDPATH}/md5hl.c
+	$(CC) -c ${CFLAGS} ${LDADD} ${LIBMDPATH}/md5hl.c
+
+lib${LIB}.a: ${SRCS}
+	@echo [building standard ${LIB} library]
+	rm -f lib${LIB}.a 
+	if [ -f /usr/bin/lorder ]; then \
+		ar cq lib${LIB}.a `lorder ${SRCS} | tsort`  ; \
+	else \
+		ar cq lib${LIB}.a ${SRCS}; \
+	fi;
+	if [ -f /usr/bin/ranlib ]; then \
+		ranlib lib${LIB}.a; \
+	fi;
+	cp lib${LIB}.a ../
+
+clean:
+	rm -f *.o lib${LIB}.a ../lib${LIB}.a ${CLEANFILES}

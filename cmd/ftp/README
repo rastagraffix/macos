@@ -1,0 +1,44 @@
+BSDftpd-ssl is a secure FTP server that supports industry standard TLS/SSL
+encryption and authentication for whole FTP sessions and data transfers.
+
+The TLS/SSL encryption provides both the integrity and confidentiality
+protections for the passwords and the transferring data.
+
+This implementation is compatible with the original FTP protocol, which is
+described in RFC 959, and the TLS/SSL enhancement allows RFC 2228 "FTP Security
+Extensions"-compliant TLS/SSL protection for both control and data channels.
+
+This package contains the secure FTP server, which is named "ftpd", a command-
+line secure FTP client utility, which is named "ftps", an essential
+documentation, and also script programs for a basic X.509 certificate
+management.
+
+Supported operating systems are:
+- FreeBSD 4.11, 5.3.
+- NetBSD 1.6.2, 2.0.
+- Fedora Core 2, 3.
+- Debian GNU/Linux 3.0r2.
+
+The software also works with some old versions of next operating systems:
+- FreeBSD 4.7-4.10 and 5.0-5.2.
+- RedHat Linux 9, 8.0 and 7.3.
+- Fedora Core 1.
+- ALT Linux Master 2.2.
+
+Installation and configuration issues are described in the INSTALL file.
+
+The FTP server and the FTP client are based, respectively, on the FTP daemon
+and the FTP command-line client utility from FreeBSD operating system
+(http://www.freebsd.org).
+
+Initial TLS/SSL modifications are based on the code developed by
+Tim Hudson <tjh@cryptsoft.com> for use in the SSLftp project, which can be
+obtained from ftp://ftp.psy.uq.oz.au/pub/Crypto/SSLapps.
+
+These modifications for TLS/SSL support, RFC 2228 features and Linux port were
+made by Nick Leuta <skynick@mail.sc.ru>
+
+-- 
+    Nick Leuta
+    URL: http://bsdftpd-ssl.sc.ru
+    Email: skynick@mail.sc.ru

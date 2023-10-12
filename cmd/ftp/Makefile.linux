@@ -1,0 +1,67 @@
+# Makefile for the root of the source tree
+
+# Install destination
+INSTALLTOP=/usr/local
+# end of dest variables
+
+CC=gcc
+
+SUBDIRS= port ftpd ftp
+
+all:
+	@for i in $(SUBDIRS); \
+	    do (cd $$i && echo $$i && $(MAKE) CC="$(CC)" SSLTOP="$(SSLTOP)" LDADD="$(LDADD)") || exit; \
+	done
+
+clean: /dev/null
+	@for i in $(SUBDIRS); \
+	do (cd $$i && echo $$i && $(MAKE) clean) || exit; \
+	done
+
+install-server: ftpd
+	mkdir -m 755 -p $(INSTALLTOP)/usr/sbin 2>/dev/null
+	mkdir -m 755 -p $(INSTALLTOP)/usr/share/man/man5 2>/dev/null
+	mkdir -m 755 -p $(INSTALLTOP)/usr/share/man/man8 2>/dev/null
+	install -s -m 555 -o root -g root ftpd/ftpd $(INSTALLTOP)/usr/sbin/ftpd
+	install -m 444 -o root -g root ftpd/ftpchroot.5.gz $(INSTALLTOP)/usr/share/man/man5/ftpchroot.5.gz
+	install -m 444 -o root -g root ftpd/xferlog.5.gz $(INSTALLTOP)/usr/share/man/man5/xferlog.5.gz
+	install -m 444 -o root -g root ftpd/ftpd.8.gz $(INSTALLTOP)/usr/share/man/man8/ftpd.8.gz
+	ln -s -f ftpd.8.gz $(INSTALLTOP)/usr/share/man/man8/ftpd-ssl.8.gz
+
+install-client: ftp
+	mkdir -m 755 -p $(INSTALLTOP)/usr/bin 2>/dev/null
+	mkdir -m 755 -p $(INSTALLTOP)/usr/share/man/man1 2>/dev/null
+	mkdir -m 755 -p $(INSTALLTOP)/usr/share/man/man3 2>/dev/null
+	mkdir -m 755 -p $(INSTALLTOP)/usr/share/man/man5 2>/dev/null
+	install -s -m 555 -o root -g root ftp/ftps $(INSTALLTOP)/usr/bin/ftps
+	install -m 444 -o root -g root ftp/ftps.1.gz $(INSTALLTOP)/usr/share/man/man1/ftps.1.gz
+	install -m 444 -o root -g root contrib/libedit/editline.3 $(INSTALLTOP)/usr/share/man/man3/ftps-editline.3
+	gzip -9 $(INSTALLTOP)/usr/share/man/man3/ftps-editline.3
+	install -m 444 -o root -g root contrib/libedit/editrc.5 $(INSTALLTOP)/usr/share/man/man5/ftps-editrc.5
+	gzip -9 $(INSTALLTOP)/usr/share/man/man5/ftps-editrc.5
+
+install-doc: /dev/null
+	mkdir -m 755 -p $(INSTALLTOP)/usr/share/doc/bsdftpd-ssl 2>/dev/null
+	mkdir -m 755 -p $(INSTALLTOP)/usr/share/doc/bsdftpd-ssl/docs 2>/dev/null
+	mkdir -m 755 -p $(INSTALLTOP)/usr/share/doc/bsdftpd-ssl/cert 2>/dev/null
+	install -m 444 -o root -g root COPYRIGHT $(INSTALLTOP)/usr/share/doc/bsdftpd-ssl/COPYRIGHT
+	install -m 444 -o root -g root INSTALL $(INSTALLTOP)/usr/share/doc/bsdftpd-ssl/INSTALL
+	install -m 444 -o root -g root README $(INSTALLTOP)/usr/share/doc/bsdftpd-ssl/README
+	install -m 444 -o root -g root ChangeLog $(INSTALLTOP)/usr/share/doc/bsdftpd-ssl/ChangeLog
+	install -m 444 -o root -g root docs/README $(INSTALLTOP)/usr/share/doc/bsdftpd-ssl/docs/README
+	install -m 444 -o root -g root docs/cert-basics.txt $(INSTALLTOP)/usr/share/doc/bsdftpd-ssl/docs/cert-basics.txt
+	install -m 444 -o root -g root docs/cert-howto.txt $(INSTALLTOP)/usr/share/doc/bsdftpd-ssl/docs/cert-howto.txt
+	install -m 444 -o root -g root docs/ciphers.txt $(INSTALLTOP)/usr/share/doc/bsdftpd-ssl/docs/ciphers.txt
+	install -m 444 -o root -g root docs/licenses $(INSTALLTOP)/usr/share/doc/bsdftpd-ssl/docs/licenses
+	install -m 444 -o root -g root docs/standards.txt $(INSTALLTOP)/usr/share/doc/bsdftpd-ssl/docs/standards.txt
+	install -m 444 -o root -g root docs/verify.txt $(INSTALLTOP)/usr/share/doc/bsdftpd-ssl/docs/verify.txt
+	install -m 444 -o root -g root docs/x509_auth.txt $(INSTALLTOP)/usr/share/doc/bsdftpd-ssl/docs/x509_auth.txt
+	install -m 555 -o root -g root cert/cert-dummy.sh $(INSTALLTOP)/usr/share/doc/bsdftpd-ssl/cert/cert-dummy.sh
+	install -m 555 -o root -g root cert/cert-nopass.sh $(INSTALLTOP)/usr/share/doc/bsdftpd-ssl/cert/cert-nopass.sh
+	install -m 555 -o root -g root cert/cert-pass.sh $(INSTALLTOP)/usr/share/doc/bsdftpd-ssl/cert/cert-pass.sh
+	install -m 555 -o root -g root cert/xCA.sh $(INSTALLTOP)/usr/share/doc/bsdftpd-ssl/cert/xCA.sh
+
+install: install-server install-client install-doc
+	@echo "**************************************************"
+	@echo "* Do not forget to make the certificate for ftpd *"
+	@echo "**************************************************"

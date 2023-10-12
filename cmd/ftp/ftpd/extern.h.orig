@@ -1,0 +1,159 @@
+/*-
+ * Copyright (c) 1992, 1993
+ *	The Regents of the University of California.  All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. All advertising materials mentioning features or use of this software
+ *    must display the following acknowledgement:
+ *	This product includes software developed by the University of
+ *	California, Berkeley and its contributors.
+ * 4. Neither the name of the University nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ *	@(#)extern.h	8.2 (Berkeley) 4/4/94
+ * $FreeBSD: src/libexec/ftpd/extern.h,v 1.19 2002/02/04 01:23:44 kris Exp $
+ */
+
+#include <sys/types.h>
+#include <sys/socket.h>
+
+void	blkfree(char **);
+char  **copyblk(char **);
+void	cwd(char *);
+void	delete(char *);
+void	dologout(int);
+void	fatalerror(char *);
+void	feat(void);
+void    ftpd_logwtmp(char *, char *, struct sockaddr *addr);
+int	ftpd_pclose(FILE *);
+FILE   *ftpd_popen(char *, char *);
+char   *getline(char *, int, FILE *);
+void	lreply(int, const char *, ...);
+void	makedir(char *);
+void	nack(char *);
+void	pass(char *);
+void	passive(void);
+void	long_passive(char *, int);
+void	perror_reply(int, char *);
+void	pwd(void);
+void	removedir(char *);
+void	renamecmd(char *, char *);
+char   *renamefrom(char *);
+void	reply(int, const char *, ...);
+void	retrieve(char *, char *);
+void	send_file_list(char *);
+#ifdef OLD_SETPROCTITLE
+void	setproctitle(const char *, ...);
+#endif
+void	statcmd(void);
+void	statfilecmd(char *);
+void	store(char *, char *, int);
+void	synterr(char *);
+void	upper(char *);
+void	user(char *);
+void	yyerror(char *);
+int	yyparse(void);
+#if defined(INTERNAL_LS)
+int	ls_main(int, char **);
+#endif
+
+/*
+ * Important note for porting to other platforms:
+ * sockunion is dependent on the definition of the system's sockaddr_in and
+ * sockaddr_in6, because it MUST keep the order of their members. There are
+ * several known definitions of sockaddr_in and sockaddr_in6.
+ *
+ * FreeBSD (4.8/5.0):
+ * struct sockaddr_in {
+ *	uint8_t		sin_len;
+ *	sa_family_t	sin_family;
+ *	in_port_t	sin_port;
+ *	struct	in_addr sin_addr;
+ *	char		sin_zero[8];
+ * };
+ * struct sockaddr_in6 {
+ *	uint8_t		sin6_len;
+ *	sa_family_t	sin6_family;
+ *	in_port_t	sin6_port;
+ *	uint32_t	sin6_flowinfo;
+ *	struct in6_addr	sin6_addr;
+ *	uint32_t	sin6_scope_id;
+ * };
+ *
+ * OpenBSD: sockaddr_[in|in6] has the same definition except that some
+ * integer types has different names (u_int8_t instead of uint8_t and u_int32_t
+ * instead of uint32_t) and member sin_zero[8] of sockaddr_in has type int8_t
+ * instead of char.
+ *
+ * Linux (glibc-2.2.5):
+ * struct sockaddr_in {
+ *	sa_family_t sin_family;
+ *	uint16_t sin_port;
+ *	struct in_addr sin_addr;
+ *	unsigned char sin_zero[sizeof (struct sockaddr) -
+ *				sizeof (sa_family_t) -
+ *				sizeof (uint16_t) -
+ *				sizeof (struct in_addr)];
+ * };
+ * struct sockaddr_in6 {
+ *	sa_family_t sin6_family;
+ *	uint16_t sin6_port;
+ *	uint32_t sin6_flowinfo;
+ *	struct in6_addr sin6_addr;
+ * };
+ */
+union sockunion {
+	struct sockinet {
+/* If we don't have the sin_len member, but we want to use si_len, we must put
+ * si_len at the end. WARNING! In this case we must to initialize si_len by the
+ * value of sizeof(struct sockaddr_in) or sizeof(struct sockaddr_in6) every
+ * time than it will be initialized by correspondent library function in
+ * sin_len-aware systems.
+ */
+#ifndef LINUX /* BSD source */
+		u_char si_len;
+		u_char si_family;
+		u_short si_port;
+#else /* Linux port */
+		sa_family_t si_family;
+		unsigned short int si_port;
+#ifdef INET6
+		char padding[sizeof(struct sockaddr_in6) - sizeof(sa_family_t) -
+			     sizeof(unsigned short int)];
+#else /* !INET6 */
+		char padding[sizeof(struct sockaddr_in) - sizeof(sa_family_t) -
+			     sizeof(unsigned short int)];
+#endif /* INET6 */
+/* Uncomment next line only if you really want to use si_len */
+/*		u_char si_len;*/
+#endif /* Linux port */
+	} su_si;
+	struct sockaddr_in  su_sin;
+#ifdef INET6
+	struct sockaddr_in6 su_sin6;
+#endif /* INET6 */
+};
+
+#define	su_len		su_si.si_len
+#define	su_family	su_si.si_family
+#define	su_port		su_si.si_port

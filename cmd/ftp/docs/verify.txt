@@ -1,0 +1,159 @@
+BSDftpd-ssl project  <URL: http://bsdftpd-ssl.sc.ru/ >
+
+       Locations of trusted CA certificates and CRLs for BSDftpd-ssl
+
+Author: Nick Leuta <skynick@mail.sc.ru>
+18 November, 2003
+
+This document is based on the SSL_CTX_load_verify_locations(3) man page from
+OpenSSL 0.9.6 distribution and it describes some certificate verification
+basics as they are realized in BSDftpd-ssl.
+
+CONTENTS
+========
+1. About the certificate verification procedure
+2. OpenSSL's defaults
+3. Notes
+4. Warnings
+5. Examples
+
+1. About the certificate verification procedure
+-----------------------------------------------
+A peer verification during the TLS/SSL handshaking is intended for the
+determination of the identity of the remote service or the client. This
+determination is started from a certificate validation. The certificate
+validation is the process of ensuring that a certificate was valid at a given
+time, including possibly the construction and processing of a certification
+path, and ensuring that all certificates in that path were valid (i.e. were not
+expired or revoked) at that given time.
+
+The validation is performed by checking the certificate signature against the
+list of trusted Certificate Authority (CA) roots and by checking the
+certificate serial number against CA's Certificate Revocation List (CRL).
+Additional checks may be performed after that.
+
+This document is linked only with the certificate validation. The application
+of X.509 client certificates to user authentication purposes is described in
+the x509_auth.txt file.
+
+The certificate is checked starting with the deepest nesting level (the root CA
+certificate) and worked upward to the peer's certificate. At each level
+signatures, issuer attributes and serial numbers are checked. So it's required
+that the trusted CA root certificate would be available to a side doing the 
+verification. CRL is optional, but is important for the verification procedure
+and it will be used if present. OpenSSL provides the general mechanism to deal
+with CRLs but does not use them automatically when verifying certificates.
+However BSDftpd-ssl always uses CRLs when it is possible.
+
+The list of trusted CA roots may be customized to any application according to
+specific goals they are solving.
+
+2. OpenSSL's defaults
+---------------------
+OpenSSL allows to store the list of CA certificates or CRLs in a single file
+(in this document such files will be named CAfile and CRLfile, respectively)
+or in a variety of files placed in one directory (such directories will be
+named CApath and CRLpath, respectively).
+
+The default locations of trusted CA certificates compiled into the OpenSSL
+library are cert.pem file (CAfile) and certs/ subdirectory (CApath) in the
+OpenSSL configuration directory. OpenSSL does not have default values for CRL
+locations, but BSDftpd-ssl designates them to crl.pem (CRLfile) and certs/
+subdirectory (CRLpath) in OpenSSL configuration directory.
+
+The recommended location of trusted CA certificates and CRLs is the certs/
+directory.
+
+The default locations may be overridden in applications. Both the ftpd server
+and the ftps client from the main BSDftpd-ssl distribution support this
+feature. See ftps(1) and ftpd(8) man pages for more information.
+
+A similar information about the third-party products (whose may not use
+OpenSSL) can be obtained from their documentations.
+
+3. Notes
+--------
+If CAfile is not NULL, it points to a file of CA certificates in PEM
+format. The file can contain several CA certificates identified by
+
+ -----BEGIN CERTIFICATE-----
+ ... (CA certificate in base64 encoding) ...
+ -----END CERTIFICATE-----
+
+sequences. Before, between, and after the certificates text is allowed
+which can be used e.g. for descriptions of the certificates.
+
+If CApath is not NULL, it points to a directory containing CA certificates
+in PEM format. Each file contains one CA certificate. The files are looked up
+by the CA subject name hash value, which must hence be available. If more than
+one CA certificate with the same name hash value exist, the extension must be
+different (e.g. 9d66eef0.0, 9d66eef0.1 etc). The search is performed in the
+ordering of the extension number, regardless of other properties of the
+certificates.
+
+If CRLfile is not NULL, it points to a file of CRLs in PEM format. Like CAfile
+this file can contain several CRLs identified by
+
+ -----BEGIN X509 CRL-----
+ ... (CRL in base64 encoding) ...
+ -----END X509 CRL-----
+
+sequences and before, between, and after the CRLs text is also allowed.
+
+If CRLpath is not NULL, it (like CApath) points to a directory containing CRLs
+in PEM format. Each file contains one CRL. The files are looked up by the CRL
+issuer name hash value, which must hence be available. If more than one CRL
+with the same name hash value exist, the extension must be different (e.g.
+9d66eef0.r0, 9d66eef0.r1 etc). The search is performed in the ordering of the
+extension number. Please note that hash file extensions for CA certificates
+(.<number>) and CRLs (.r<number>) are differ.
+
+Use the c_rehash utility to create the necessary links. If it's necessary to
+create hash links manually it's possible to use commands like this
+ ln -s CAfile.pem `openssl x509 -noout -hash < CAfile.pem`.0
+to create hash link for CA certificate stored in CAfile.pem or like this
+ ln -s CRLfile.pem `openssl crl -noout -hash < CAfile.pem`.r0
+to create hash link for CRL stored in CRLfile.pem.
+
+When looking up CA certificates, the OpenSSL library will first search the
+certificates in CAfile, then those in CApath. Certificate matching is done
+based on the subject name, the key identifier (if presents), and the serial
+number as taken from the certificate to be verified. If these data do not
+match, the next certificate will be tried. If the first certificate matching
+the parameters is found, the verification process will be performed; no other
+certificates for the same parameters will be searched in case of failure.
+
+CRLs are looking up in the similar order: BSDftpd-ssl will first search the
+CRLs in CRLfile, then those in CRLpath. CRL matching is done based on the
+issuer name. If the first CRL for this issuer is found, the verification
+process will be performed and no other CRLs will be searched in case of
+failure.
+
+4. Warnings
+-----------
+If several CA certificates matching the name, the key identifier, and the
+serial number condition are available, only the first one will be examined.
+This may lead to unexpected results if the same CA certificate is available
+with different expiration dates. If a "certificate expired" verification
+error occurs, no other certificate will be searched. Make sure to have no
+expired certificates mixed with valid ones.
+
+The similar rule is true for CRLs, so make sure to have no more than one CRL
+from one issuer.
+
+5. Examples
+-----------
+a. Generate the CA certificate file with a descriptive text from the CA
+certificates ca1.pem ca2.pem ca3.pem:
+
+ #!/bin/sh
+ rm CAfile.pem
+ for i in ca1.pem ca2.pem ca3.pem ; do
+   openssl x509 -in $i -text >> CAfile.pem
+ done
+
+b. Prepare the directory /some/where/certs containing several CA certificates
+and/or CRLs for use as CApath and/or CRLpath:
+
+ cd /some/where/certs
+ c_rehash

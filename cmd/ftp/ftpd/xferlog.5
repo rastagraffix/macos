@@ -1,0 +1,317 @@
+.\" Copyright (c) 2004, 2005 Nick Leuta
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 3. The name of the author may not be used to endorse or promote products
+.\"    derived from this software without specific prior written permission. 
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.Dd April 10, 2005
+.Dt XFERLOG 5
+.Os
+.Sh NAME
+.Nm xferlog
+.Nd the format that is used to log an information about file transfers
+.Sh DESCRIPTION
+The
+.Xr ftpd 8
+utility can log an information about file transfers to the file or to the
+syslog using LOG_FTP facility. The file transfer information may be logged in
+several formats.
+.Pp
+The default name of the file to which all file transfers are logged is
+.Pa /var/log/ftpd .
+The name and the location of this file may be changed by the virtual hosting
+configuration in the
+.Pa /etc/ftphosts
+file. In case of the wu-ftpd style logging format the most common alternative
+for the file name is
+.Pa /var/log/xferlog .
+.Pp
+The
+.Xr ftpd 8
+utility supports next logging formats:
+.Bl -tag -width wu-orig
+.It wu-orig
+The original
+.Sq xferlog
+format of the wu-ftpd server.
+.It wu-ext
+The extended wu-ftpd style
+.Sq xferlog
+format.
+.It anon
+The format for logging anonymous file downloads.
+.El
+.Pp
+Each file transfer is represented by a single line. In case of
+.Dq wu-orig
+and
+.Dq wu-ext
+formats each line contains a number of fields separated by whitespace. The
+.Dq wu-orig
+format uses next set of fields:
+.Pp
+.Ic current-time transfer-time remote-host byte-count filename transfer-type special-action-flag direction access-mode username service-name authentication-method authenticated-user-id completion-status
+.Pp
+The
+.Dq wu-ext
+format extends that set of fields by the new ones:
+.Pp
+.Ic current-time transfer-time remote-host byte-count filename transfer-type special-action-flag direction access-mode username service-name authentication-method authenticated-user-id completion-status restart-point file-size cwd filename-arg protection-level
+.Pp
+When logging to the syslog, the
+.Sq current-time
+field is replaced by the next structure:
+.Pp
+.Ic SYSLOG-PREFIX xferlog (CMDTYPE):
+.Pp
+The variable fields of this structure are:
+.Bl -tag -width SYSLOG-PREFIX
+.It SYSLOG-PREFIX
+A string that prepends to every syslog message and contains the current time,
+the local host name, the ident (the
+.Dq ftpd
+keyword for the
+.Xr ftpd 8
+utility) and the process id. See also
+.Xr syslogd 8
+and
+.Xr syslog.conf 5 .
+.It CMDTYPE
+The keyword that describes the type of FTP command depending to the direction
+of the transfer. In case of the
+.Dq wu-orig
+format it is one of
+.Dq send
+or
+.Dq recv ,
+depending to the outgoing or incoming direction of the transfer. In case of
+the
+.Dq wu-ext
+format, it is one of
+.Dq get ,
+.Dq put
+or
+.Dq append
+keywords, those correspond to the retrieve, store and append operations,
+respectively.
+.El
+.Pp
+This is a description of all fields of both wu-ftpd style formats:
+.Bl -tag -width transfer-time
+.It current-time
+The current local time in the form "DDD MMM dd hh:mm:ss YYYY", where DDD is the
+day of the week, MMM is the month, dd is the day of the month, hh is the hour,
+mm is the minutes, ss is the seconds, and YYYY is the year.
+.It transfer-time
+The total time of the transfer in seconds.
+.It remote-host
+The remote host name.
+.It byte-count
+The amount of transferred bytes.
+.It filename
+The canonicalized (all symbolic links are resolved) absolute pathname of the
+transferred file.
+.Pp
+In case of the chrooted FTP session this field can be interpreted as
+the pathname in the chrooted environment (the default interpretation) or as the
+one in the real file system. The second type of interpretation can be enabled
+by the command-line options of the
+.Xr ftpd 8 .
+.It transfer-type
+The single character that indicates the type of the transfer. The set of
+possible values is:
+.Bl -tag -width abc
+.It a
+An ascii transfer.
+.It b
+A binary transfer.
+.El
+.It special-action-flag
+.Bl -tag -width abc
+One or more single character flags indicating any special action taken. The set
+of possible values is:
+.It _
+No action was taken
+.It C
+The file was compressed (not in use).
+.It U
+The file was uncompressed (not in use).
+.It T
+The file was tar'ed (not in use).
+.El
+.It direction
+The direction of the transfer. The set of possible values is:
+.Bl -tag -width abc
+.It o
+The outgoing transfer.
+.It i
+The incoming transfer.
+.El
+.It access-mode
+The method by which the user is logged in. The set of possible values is:
+.Bl -tag -width a_(anonymous)
+.It a (anonymous)
+The anonymous guest user.
+.It g (guest)
+The real but chrooted user (this capability is guided by
+.Xr ftpchroot 5
+file).
+.It r (real)
+The real user.
+.El
+.It username
+The user's login name in case of the real user, or the user's identification
+string in case of the anonymous user (by convention it is an email address of
+the user).
+.It service-name
+The name of the service being invoked. The
+.Xr ftpd 8
+utility uses the
+.Dq ftp
+keyword.
+.It authentication-method
+The used method of the authentication. The set of possible values is:
+.Bl -tag -width abc
+.It 0
+None.
+.It 1
+RFC931 Authentication (not in use).
+.El
+.It authenticated-user-id
+The user id returned by the authentication method. The
+.Sq *
+symbol is used if an authenticated user id is not available.
+.It completion-status
+The single character that indicates the status of the transfer. The set of
+possible values is:
+.Bl -tag -width abc
+.It c
+A complete transfer.
+.It i
+An incomplete transfer.
+.El
+.It restart-point
+The restart point of the transfer in bytes.
+.It file-size
+In case of the outgoing transfer it is the original size of the file in bytes.
+In case of the incoming transfer it is the size in bytes of the file after the
+completion of the transfer.
+.It cwd
+The pathname of the current working directory. In case of the chrooted FTP
+session this field is the pathname in the chrooted environment.
+.It filename-arg
+The filename argument of the FTP command issued by the client.
+.It protection-level
+The used type of the protection of the data connection. The following codes are
+assigned according to RFC2228:
+.Bl -tag -width P_(Private)
+.It C (Clear)
+No protection was applied.
+.It S (Safe)
+An integrity protection was applied (not in use).
+.It E (Confidential)
+A confidentiality protection was applied (not in use).
+.It P (Private)
+Both the integrity and confidentiality protections were provided by TLS/SSL.
+.El
+.El
+.Pp
+The usage of
+.Dq restart-point
+and
+.Dq file-size
+fields allows to identify restarted transfers in both directions (the
+.Dq restart-point
+field contains a non-zero value) and appends in case of incoming transfers (the
+.Dq byte-count
+contains the value that is lesser then the one of the
+.Dq file-size
+field).
+.Pp
+The FTP-TLS security extension uses Clear (without TLS/SSL) and Private (with
+TLS/SSL) protection levels, in FTP-SSL compatibility mode only the Private
+level (with TLS/SSL) is supported.
+.Pp
+The
+.Dq anon
+format is used only for logging to the file and it is supported for the
+backward compatibility with old versions of
+.Xr ftpd 8 .
+In case of this format each line contains a number of fields separated by the
+`!' symbol:
+.Bl -tag -width transfer-time
+.It current-time
+The current local time in the form "MMM dd hh:mm:ss YYYY", where MMM is the
+month, dd is the day of the month, hh is the hour, mm is the minutes, ss is the
+seconds, and YYYY is the year.
+.It ident
+The user's identification string; by convention it is an email address of the
+user.
+.It remote-host
+The remote host name.
+.It filename
+The canonicalized (all symbolic links are resolved) absolute pathname of the
+transferred file.
+.Pp
+This field can be interpreted as the pathname in the anonymous ftp area (the
+default interpretation) or as the one in the real file system. The second type
+of interpretation can be enabled by the command-line options of the
+.Xr ftpd 8 .
+.It byte-count
+The amount of transferred bytes.
+.It transfer-time
+The total time of the transfer, in seconds.
+.El
+.Sh FILES
+.Bl -tag -width ".Pa /var/log/xferlog" -compact
+.It Pa /var/log/ftpd
+Log file for all file transfers.
+.It Pa /var/log/xferlog
+The alternative name of the log file for file transfers. It is commonly used
+in case of the wu-ftpd style format of logging.
+.It Pa /etc/ftpchroot
+List of normal users who should be chroot'd.
+.It Pa /etc/ftphosts
+Virtual hosting configuration file.
+.El
+.Sh SEE ALSO
+.Xr ftpchroot 5 ,
+.Xr syslog.conf 5 ,
+.Xr ftpd 8 ,
+.Xr syslogd 8
+.Sh HISTORY
+The
+.Dq wu-orig
+format appeared in the wu-ftpd server. The names of the fields in the wu-ftpd
+style formats described in this document are mainly based on ones from the
+wu-ftpd documentation. The names "wuftpd" and "wu-ftpd" are trademarks of the
+WU-FTPD Development Group and the Washington University at Saint Louis.
+.Pp
+The
+.Dq anon
+format appeared in FreeBSD 2.0.5.
+.Pp
+The
+.Dq wu-ext
+format appeared in BSDftpd-ssl 1.0.1; it has been modified in
+BSDftpd-ssl 1.1.0.

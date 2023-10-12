@@ -1,0 +1,366 @@
+* Mon May  2 2005 Nick Leuta <skynick@mail.sc.ru>
+  [1.1.0]
+General changes:
+- The support for the new target operating system - NetBSD,- has been
+  implemented.
+- The gcc compiler version 3.0 or higher is now the required compiler, but
+  the support for gcc version 2.9x is provided.
+- The IPv6 support has been enabled in the Linux port.
+- The IPV6_V6ONLY socket option now will be used when possible (for example, it
+  does not exist in Linux kernel 2.4.20 or earlier).
+- The potential gcc warnings for "use of label at the end of the compound
+  statement" were fixed.
+
+Changes in the compilation/installation procedure:
+- New values of "OSFeature" arguments ("bsdnewbind" and "nobsdnewbind") of the
+  "config.sh" script were implemented to allow and deny, respectively, the
+  usage of the euid of the current user for a data transfer in active mode.
+- An ability to specify more than one "OSFeature" arguments in a command line
+  for the "config.sh" script has been implemented.
+- The autodetermination of the safeness of the usage of some features,
+  depending to the version of the operating system, has been implemented in the
+  "config.sh" script. Now the safeness of the next features is checked for the
+  FreeBSD port: usage of the sendfile() system call, usage of the euid of the
+  current user for a data transfer in active mode.
+- The installation procedure has been modified and "make install" now has three
+  separate subtasks: "make install-server", "make install-client" and
+  "make install-doc" to install only the server, the client and the
+  documentation, respectively.
+- New way to run the "config.sh" script has been implemented: convert the
+  source code to the gcc 2.9x compatible state.
+
+Changes in the server part:
+- The "wu-ext" xferlog format has been extended. New fields:
+  "protection-level", "cwd" and "filename-arg" - the data connection protection
+  state, the pathname of the current working directory and the filename
+  argument of the FTP command issued by the client, respectively, were added.
+  The "filename" field of the wu-orig and wu-ext formats now is the pathname
+  returned by realpath().
+- The bug in the implementation of the CDUP and XCUP commands has been fixed:
+  arguments were expected, but according to the RFC959 these commands do not
+  use arguments.
+- Several bugs have been fixed in the "anon" xferlog format:
+  - Log the actual number of bytes sent on the wire, as it is documented in
+    xferlog.5, instead of the disk size of the file sent.
+  - The "filename" field is the pathname returned by realpath(). Old
+    implementation was able to record bogus pathnames to the log in some cases,
+    namely, when cwd was "/" or "name" was absolute.
+- The ability to log file names, in case of the chrooted FTP session, as the
+  pathnames in the chrooted environment (by default) or as the ones in the real
+  file system, has been implemented. New command-line option "-L" can be used
+  to switch to the new behavior.
+- Pathname arguments to ftp commands are now logged as the user specified them;
+  the working directory pathname is added to the log message if any of such
+  arguments are not absolute. This has advantage over the old way of logging
+  that an admin can see what users are actually trying to do, and where. The
+  old code was also not too robust in cases of a chrooted session and/or an
+  absolute pathame.
+- The termination of an ftp connection is now logged to the syslog.
+- The chroot dir is now logged, and this action takes place once at the
+  beginning of the session.
+- Changes of the data connection protection level are now logged with syslog.
+- The ability to open a socket for a data transfer in active mode using the
+  effective UID of the current user, not root, has been implemented. In FreeBSD
+  this ability allows matching the user's FTP data traffic with an ipfw.
+- Messages will never be emitted to stderr, and syslog will be used instead.
+- Several bugs have been fixed in the sendfile() support:
+  - The bug with sendfile() that may hit the end of file prematurely, e.g., if
+    the file has been truncated by someone else, has been fixed.
+  - The transfer must not fall back to the old way (read()-write()) if
+    sendfile() transferred some data before throwing a error condition, because
+    sendfile() won't move the file offset for read() to start from.
+- Both SysV-style passwd/shadow implementation (used in Linux) and BSD-style
+  passwd/master.passwd one now are properly supported in case of the standard
+  (without PAM) UNIX authentication.
+- Use uniform punctuation, capitalization, and language style in server
+  messages wherever it doesn't contradict to a particular message format.
+- RFC959 states that the following codes should be used for status replies on
+  the file system objects: "212 Directory status", "213 File status".
+- Don't say "file: permission denied" if the operation is disabled entirely.
+
+Changes in the client part:
+- Feature enhancement: the "stat" command now shows for remote side (for both
+  normal and proxy connections) not only the hostname, but also the IP address.
+
+Changes in the documentation:
+- The ftpchroot(5) man page is also available as ftpchroot-ssl(5) in both
+  FreeBSD and NetBSD.
+- The usage of the LOG_AUTH and LOG_AUTHPRIV syslog facilities has been
+  documented.
+- The recommendations for PAM configurations were updated, and the "readme"
+  presentation of the software has been updated too.
+
+* Fri Jul 9 2004 Nick Leuta <skynick@mail.sc.ru>
+  [1.0.2]
+- IPv6 support is now enabled for FreeBSD in both the client and the server.
+- ftpd: An ability to override the IP address that will be advertised to IPv4
+  clients in response to the PASV/LPSV commands has been implemented. The "-a"
+  command-line argument now has the new syntax: "-a bind=" is the same as old
+  "-a", and "-a pasvip=" specifies an IPv4 address or a symbolic host name that
+  will be resolved after the connection of the client. In the daemon mode only
+  the IP addresses are allowed as possible string values for "-a pasvip=".
+- ftpd: Reply messages for AUTH, PBSZ and PROT commands were modified.
+- ftpd: FEAT and OPTS commands from RFC 2389 were implemented. The way of
+  analyzing of FTP commands has been changed to perform a basic syntax checking
+  and returning the "501 Syntax error in parameters or arguments." reply to
+  clients if command expects the arguments but they aren't provided or if
+  command doesn't expect the arguments but they are provided.
+- ftpd: A bug in the daemon mode has been fixed: if the IPv6 is configured in
+  the system, but the server is compiled without the IPv6 support, don't try
+  to bind to local IPv6 addresses (otherwise data connections will not work).
+- ftpd: The "-E" command-line option now disables both EPSV and EPRT commands.
+- ftpd: The bug with logging of negative values of times and file sizes in the
+  wu-ftpd style xferlog format, which can be occurred in case of rejected
+  attempts of transfer, for example, if the requested file isn't a plain file,
+  has been fixed.
+- ftpd: The bug that breaks encrypted control connections during file transfers
+  in ASCII mode has been fixed.
+- ftps: A bug which leads to the segmentation fault error in case if the
+  program waits for username and password from stdin, but the server closes the
+  control connection, has been fixed.
+- ftps: New user-level command has been implemented: "features" - show a list
+  of extensions supported by the remote system.
+- ftps: The support for EPRT and EPSV commands (RFC2428) has been completely
+  implemented for IPv4 mode. The autodetection of the support for EPRT/EPSV by
+  the remote side now works in both IPv4 and IPv6 modes.
+- ftps: The support for EPSV/EPRT commands now can be enabled or disabled
+  separately for IPv4 with help of the existent "epsv4" command and for IPv6
+  with help of the new "epsv6" command.
+
+* Mon Mar 1 2004 Nick Leuta <skynick@mail.sc.ru>
+  [1.0.1]
+- The support for large files (include the usage of the _FILE_OFFSET_BITS=64
+  macros in the Linux port) was enabled. It is incompatible with some Linux
+  implementations of the support for the sendfile() system call, so the support
+  for sendfile() is disabled in Linux (but not in FreeBSD) until the
+  incompatibility will be fixed in the kernel and/or glibc.
+- ftpd: in FreeBSD the config.sh script now enables the support for the
+  sendfile() system call only in 5.2 or later versions in 5.x series due to the
+  serious kernel bug, which corrupts a transferred data, in all versions of
+  this operating system those were released before 1 December 2003. The support
+  for sendfile() will also be disabled in 4.9 and earlier versions, but it's
+  possible to manually enable it in the 4-STABLE series.
+- ftpd: the x509.users file was renamed to x509.auth and the format of this
+  file has been extended.
+- ftpd: the support for the wu-ftpd style xferlog format (with some optional
+  extensions) was implemented. New man page - xferlog(5), which describes
+  the logging formats for the file transfers, was added.
+- ftps, ftpd: the bug, which breaks the control connection with the server if
+  the ABOR command of the FTP protocol was sent during the initialization of
+  the TLS/SSL session on the data connection, was fixed.
+- ftpd: the inconsistency between the documentation, which says that by
+  default anonymous users cannot modify existing files, and the real code,
+  which allows the deletion of files, was fixed, and the documented behaviour
+  has been enforced.
+- The support for two known ways to install the C include files of the ncurses
+  library in popular Linux distributions (into /usr/include or into
+  /usr/include/ncurses) has been implemented.
+
+* Tue Nov 25 2003 Nick Leuta <skynick@mail.sc.ru>
+  [1.0.0]
+- Initial release in the 1.x branch. The ftpd(8) FTP server uses the renewed
+  base code; a helper code for porting purposes was renewed and partially
+  rewritten. Other parts of this software, include the ftps(1) FTP client, are
+  based on ones from the 0.6.x branch.
+- Thanks to Oksana Morozova <morozova@stu.lipetsk.ru> for her editorial
+  assistance in preparing this release.
+
+Note: the 1.x branch is started from the 0.6.3 version, but 0.6.x branch has
+been under development up to the release of the 1.0.0 version.
+
+* Mon Aug 18 2003 Nick Leuta <skynick@mail.sc.ru>
+  [0.6.3]
+- Installation procedure was partially rewritten in Linux port and now it's
+  compatible with GNU install.
+- ftps: termcap.h was replaced by curses.h in Linux port to complitely remove
+  the dependence from libtermcap.
+- ftpd: a search rule for Berkeley Yacc was changed in Linux port: at a time of
+  compilation byacc executable file will be tried first, and yacc will be tried
+  second.
+- ftpd: delay before reading password after failed login attempt now will
+  really work.
+- ftpd: PAM authentication now will be used even the entered by user login name
+  doesn't exists in user database. This enhancement hits several targets:
+  1) It prevents potential username enumeration vulnerability. The problem is
+  that if a valid username and invalid password is supplied, some PAM modules
+  may to make a delay in the response, whereas a response is always returned
+  immediately if an invalid username and any password is supplied.
+  2) It enables support for "template" user account (it's useful, for example,
+  in case of RADIUS-based auth scheme).
+- ftpd: reset of a logging facility after an attempt of PAM auth was
+  implemented because any PAM module may change the facility if it writes
+  something to the syslog.
+
+* Sat Mar 15 2003 Nick Leuta <skynick@stu.lipetsk.ru>
+  [0.6.2]
+- ftpd: built-in S/Key support was disabled in FreeBSD port (it is unavailable
+  in Linux port) due to differences in its implementations in FreeBSD 4 and 5.
+- ftps: termcap library was substituted by ncurses one.
+- ftps: FreeBSD port now is statically linked with libedit, because
+  FreeBSD 4 and 5 are shipped with different versions of this library.
+- An ability to renew CA certificate was added to xCA.sh CA maintaining script.
+- documentation: occurrences of the OpenSSL 0.9.6-style "uniqueIdentifier"
+  attribute were replaced to the OpenSSL 0.9.7-style "x500UniqueIdentifier"
+  one.
+
+* Thu Dec 5 2002 Nick Leuta <skynick@stu.lipetsk.ru>
+  [0.6.1]
+- ftpd: a bug, which eventually breaks non-secure data transfers in FreeBSD,
+  was fixed.
+- ftpd: incorrect size replied by SIZE command in Linux port was fixed.
+- ftpd: a bug with STAT command, which may terminate session in TLS/SSL mode,
+  was fixed.
+- ftps: a bug with a dynamic progress bar in Linux port was fixed.
+- ftps: sources were updated to ones from FreeBSD 4.7.
+- documentation: editline(3) and editrc(5) man pages, those are mentioned in
+  ftps(1) page, are now accessible as ftps-editline(3) and ftps-editrc(5),
+  respectively, to avoid confusions with any possible Linux port of libedit.
+
+* Wed Oct 30 2002 Nick Leuta <skynick@stu.lipetsk.ru>
+  [0.6.0]
+- ftpd: X.509 certificate-based user authentication was implemented. This type
+  of authentication is controlled by new command-line option "-z auth" and
+  /etc/x509.users configuration file. It's recommended to review PAM
+  configuration during upgrade from previous versions.
+- ftpd: "-z refnu" and "-z defau" command-line options were added to force non-
+  anonymous users to use TLS/SSL encryption and to prevent anonymous users from
+  use of it, respectively.
+- ftpd: support for virtual hosting was enhanced. It's now possible to specify
+  not only account for anonymous user, but also a directory, which will be used
+  for chrooting instead of account's login directory.
+- ftpd: PBSZ command of FTP protocol is now allowed at any time after AUTH, but
+  PROT is still be allowed by default only after USER/PASS.
+- ftpd: built-in implementation of support for /etc/ftpusers was enabled in
+  Linux port.
+- ftpd: compile-time bugs with *.mk files, which breaks compilation on
+  FreeBSD 4.6, was fixed.
+- ftpd: in FreeBSD the man page is now accessible by ftpd-ssl(8) name.
+- ftpd: support for shadow password database implementation that requires
+  shadow.h was added (thanks to Eric AUGE <eau@phear.org>).
+- ftps: calculating rule of tranfer speed was modified to consider the whole
+  transfer time.
+- Documentation and man pages were updated. The generic information about X.509
+  certificates was moved into separate file. Article about certificate-based
+  authentication was added.
+- The text of the license was included into the source tree.
+
+* Mon Jul 8 2002 Nick Leuta <skynick@stu.lipetsk.ru>
+  [0.5.4]
+- ftpd: internal support for list file requests was modified for more
+  locale-independent listing.
+- ftpd: "-z apbu" command-line option was added to allow switching data
+  connections protection state before user will be actually logged in
+  (thanks to Ladislav Bukvicka <Ladislav.Bukvicka@kpnqwest.cz>).
+- ftpd: reply code in FTP-SSL compatibility mode was changed from 334 to 234,
+  "-z uorc" command-line option turns it back to 334.
+- ftps: "-z noprot" command-line option was added to prevent an attempt to turn
+  on protection of data connections during establishing secure FTP-TLS session
+  with server.
+- Some cleanups occurred in Linux porting code. Also an attempt to use bison
+  instead of yacc for making ftpd is removed to prevent possible
+  incompatibilities.
+
+* Sun Apr 14 2002 Nick Leuta <skynick@stu.lipetsk.ru>
+  [0.5.3]
+- Enhancement: CRL support has been added.
+- Unnecessary verbosity of TLS/SSL code was left in debugging mode.
+- Both ftpd and ftps now expect that the peer's certificate presented for the
+  data connection must match the one used for the corresponding control
+  connection.
+- ftpd: "-u umask" command-line option (which is useful in Linux) was
+  documented.
+- ftpd: a bug with TLS/SSL session caching fixed.
+- ftpd: internal support for list file requests now uses the same sources of
+  "ls" command for both FreeBSD and Linux.
+- ftps: execution of FTP commands on a secondary control connection
+  (proxy ftp-command) was enabled in TLS/SSL mode.
+- ftps: a bug in Linux port of libedit, which may lead to crash, was fixed
+  (thanks to Peter Pfannenschmid <Peter.Pfannenschmid@t-online.de>).
+- New CA maintaining script with CRL support (named xCA.sh) was added.
+- Documentation and man pages were updated.
+
+* Fri Jan  4 2002 Nick Leuta <skynick@stu.lipetsk.ru>
+  [0.5.2]
+- ftpd: a bug which breaks data connections with some third-party secure FTP
+  clients was fixed. Also TLS/SSL session negotiation code for control and data
+  connections was revised to enhance security.
+- Minor code changes were occurred in source configuration and certificate
+  generation scripts.
+
+* Fri Dec  7 2001 Nick Leuta <skynick@stu.lipetsk.ru>
+  [0.5.1]
+- ftpd: PAM support was enhanced. During upgrade from previous versions
+  please verify that account management line(s) is(are) present in ftpd's PAM
+  configuration.
+- TLS/SSL debugging code was revised. New feature - log file, required by ftpd
+  to use TLS/SSL debugging, was added.
+- Certificate features were revised. New features were added: alternate verify
+  locations and cipher preference list.
+- Fix compile-time bugs which breaks compilation in Red Hat Linux 7.1 due to
+  glibc 2.2 and 2.1 differences.
+- New scripts for certificate generation were implemented.
+- Documentation was updated, articles about TLS/SSL ciphers and certificate
+  verification were added.
+
+* Sun Aug  5 2001 Nick Leuta <skynick@stu.lipetsk.ru>
+  [0.5.0]
+- Enhancement: support for RFC2228 and FTP-TLS draft (from 5th April, 2001)
+  was added, but compatibility with previous FTP-SSL upgrade is still supported.
+  Several new commands were added to ftpd, one command (named prot) added
+  to ftps for turning on/off encryption of data connections.
+- ftpd, ftps: TLS/SSL cipher messages now logged and displayed in more
+  verbose form, status information displayed by ftpd and ftps also was
+  modified.
+- Some code corrections (for example, both ftpd and ftps can be correctly
+  compiled without TLS/SSL support) were occurred.
+
+* Sat Jul 21 2001 Nick Leuta <skynick@stu.lipetsk.ru>
+  [0.4.4]
+- Documentation and man pages were updated, minor code changes also occurred.
+- Scripts for source configuration and SSL certificate generation were updated.
+- ftps: user prompt changed, usage information updated.
+
+* Sat Jun  9 2001 Nick Leuta <skynick@stu.lipetsk.ru>
+  [0.4-3]
+- ftpd: ABOR command now works in both non-ssl and ssl mode.
+- ftpd, linux port: signal handling fixed.
+
+* Tue Jun  5 2001 Nick Leuta <skynick@stu.lipetsk.ru>
+  [0.4-2]
+- Bugfix
+  ftpd: ABOR command doesn't work in non-ssl mode with clients which sends
+  IAC in urgent mode and uses DM (for example, original BSD clients).
+- Break
+  ftpd: ABOR command now does nothing in ssl mode.
+
+* Mon Jun  4 2001 Nick Leuta <skynick@stu.lipetsk.ru>
+  [0.4-1]
+- Bugfix release
+  ftpd, linux port: incorrect logging of file size.
+  ftpd: incorrect handling HELP/STAT commands in ssl mode.
+  ftps: cannot connect to new remote ftp server if previous server was
+        connected via ssl.
+- Bug found: ABOR command doesn't work in ssl mode due to OOB issues.
+
+* Sat Jun  2 2001 Nick Leuta <skynick@stu.lipetsk.ru>
+  [0.3-1]
+- Documentation and man pages were updated, no functional changes occurred.
+
+* Wed May 16 2001 Nick Leuta <skynick@stu.lipetsk.ru>
+  [0.2-2]
+- Security fix release (linux port only): glob() DoS in Linux port of ftpd was
+  fixed. FreeBSD port is not vulnerable, so no update is needed for FreeBSD
+  users. All Linux users are recommended to update ftpd version.
+
+* Wed May  2 2001 Nick Leuta <skynick@stu.lipetsk.ru>
+  [0.2-1]
+- FTP clients for UNIX platform were released.
+- Bugfix in linux port of ftpd (incorrect file size displayed at transfer).
+
+* Sat Apr 28 2001 Nick Leuta <skynick@stu.lipetsk.ru>
+  [0.1-2]
+- PAM service name has been changed from ftp to ftpd.
+
+* Thu Apr 24 2001 Nick Leuta <skynick@stu.lipetsk.ru>
+  [0.1-1]
+- Initial release.

@@ -1,0 +1,61 @@
+### General stuff
+## Override this if needed
+CC = gcc
+
+PROG=	ftps
+MAN=	ftps.1
+
+### Common flags and features
+OPT_CFLAGS= -Wall -O2 -Wno-unused -Wno-uninitialized -DLINUX
+CFLAGS= ${OPT_CFLAGS} -I../port
+# -DSMALL
+## Large file support
+CFLAGS+= -D_LARGEFILE_SOURCE
+CFLAGS+= -D_FILE_OFFSET_BITS=64
+## IPv6 support
+CFLAGS+=-DINET6
+###
+
+### TLS/SSL support
+## Comment lines below to disable TLS/SSL support
+CFLAGS+= -DUSE_SSL
+LIBS+= -lssl -lcrypto
+## Next lines must present regardless of TLS/SSL support state
+OBJS+= sslapp.o ssl_port.o ssl_port_ftps.o
+CFLAGS+= -I../ssl
+###
+
+### other stuff
+#LIBS+= -ltermcap -ledit 
+LIBS+= -lncurses ../port/libedit.a ../port/libbsdport.a
+
+OBJS+=	cmds.o cmdtab.o complete.o domacro.o fetch.o ftp.o main.o ruserpass.o \
+	util.o
+CLEANFILES=
+###
+
+### You shouldn't need to edit anything below
+include ../Makefile.inc
+
+$(PROG):	$(OBJS) $(LIBS) man
+	$(CC) -o $(PROG) $(CFLAGS) $(OBJS) $(LIBS)
+
+man:		$(MAN)
+	@for i in $(MAN); \
+		do (gzip -9 -c $$i>$$i.gz) || exit; \
+	done
+
+clean:
+	rm -f *.o $(PROG) $(CLEANFILES)
+	@for i in $(MAN); \
+		do (rm -f $$i.gz) || exit; \
+	done
+
+sslapp.o:		../ssl/sslapp.c
+	$(CC) -c $(CFLAGS) ../ssl/sslapp.c
+
+ssl_port.o:		../ssl/ssl_port.c
+	$(CC) -c $(CFLAGS) ../ssl/ssl_port.c
+
+ssl_port_ftps.o:	../ssl/ssl_port_ftps.c
+	$(CC) -c $(CFLAGS) ../ssl/ssl_port_ftps.c

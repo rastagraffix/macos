@@ -1,0 +1,11 @@
+BSDftpd-ssl project  <URL: http://bsdftpd-ssl.sc.ru/ >
+
+Documentation contents
+======================
+cert-basics.txt - X.509 certificate basics
+cert-howto.txt  - Certificates HOWTO
+x509_auth.txt   - User authentication using X.509 certificates
+verify.txt      - Locations of trusted CA certificates and CRLs for BSDftpd-ssl
+ciphers.txt     - OpenSSL/BSDftpd-ssl cipher list format description
+standards.txt   - Standards related to BSDftpd-ssl
+licenses        - Licenses related to BSDftpd-ssl

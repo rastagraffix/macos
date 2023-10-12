@@ -1,0 +1,1041 @@
+.\" Copyright (c) 1985, 1988, 1991, 1993
+.\"	The Regents of the University of California.  All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 3. All advertising materials mentioning features or use of this software
+.\"    must display the following acknowledgement:
+.\"	This product includes software developed by the University of
+.\"	California, Berkeley and its contributors.
+.\" 4. Neither the name of the University nor the names of its contributors
+.\"    may be used to endorse or promote products derived from this software
+.\"    without specific prior written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.\"     @(#)ftpd.8	8.2 (Berkeley) 4/19/94
+.\" $FreeBSD: src/libexec/ftpd/ftpd.8,v 1.67 2004/05/16 22:11:40 ru Exp $
+.\"
+.Dd Nov 1, 2004
+.Dt FTPD 8
+.Os
+.Sh NAME
+.Nm ftpd
+.Nd Internet File Transfer Protocol server
+.Sh SYNOPSIS
+.Nm
+.Op Fl 46ADdEhMmOoRrUuvW
+.Op Fl L Ar logparam Op Fl L Ar logparam
+.Op Fl l Op Fl l
+.Op Fl a Ar addrparam Op Fl a Ar addrparam
+.Op Fl P Ar port
+.Op Fl p Ar file
+.Op Fl S Ar logtype
+.Op Fl T Ar maxtimeout
+.Op Fl t Ar timeout
+.Op Fl u Ar umask
+.Op Fl X Ar logtype
+.Op Fl z Ar secparam Op Fl z Ar secparam Op ...
+.Sh DESCRIPTION
+The
+.Nm
+utility is the
+Internet File Transfer Protocol
+server process.  The server uses the
+.Tn TCP
+protocol
+and listens at the port specified with the
+.Fl P
+option or in the
+.Dq ftp
+service specification; see
+.Xr services 5 .
+.Pp
+Available options:
+.Bl -tag -width indent
+.It Fl 4
+When
+.Fl D
+is specified, accept connections via
+.Dv AF_INET
+socket.
+.It Fl 6
+When
+.Fl D
+is specified, accept connections via
+.Dv AF_INET6
+socket.
+.It Fl A
+Allow only anonymous ftp access.
+.It Fl a
+Configure network addresses. This option may be specified several times to set
+different address parameters. The possible values of
+.Ar addrparam
+are:
+.Bl -tag -width indent
+.Pp
+.It Cm bind=\fIaddress\fR
+When
+.Fl D
+is specified, accept connections only on the specified \fIaddress\fR. The value
+of the \fIaddress\fR parameter may be a numeric host address string (a
+dotted-decimal IPv4 address or an IPv6 hex address) or a symbolic host name.
+.It Cm pasvip=\fIaddress\fR
+Override the IP address that will be advertised to IPv4 clients in response to
+the PASV and LPSV commands. The \fIaddress\fR parameter describes an IPv4
+family address.
+.Pp
+When
+.Fl D
+is not specified, the value of the \fIaddress\fR string may be a numeric
+IPv4 family address in the dotted-decimal notation or a symbolic host name,
+which will be resolved after the connection of the client. If
+.Fl D
+is specified, only the numeric host address string is supported.
+.El
+.It Fl D
+With this option set,
+.Nm
+will detach and become a daemon, accepting connections on the FTP port and
+forking children processes to handle them.
+This is lower overhead than starting
+.Nm
+from
+.Xr inetd 8
+and is thus useful on busy servers to reduce load.
+.It Fl d
+Debugging information is written to the syslog using
+.Dv LOG_FTP .
+.It Fl E
+Disable the EPSV and EPRT commands.
+This is useful for servers behind older firewalls.
+.It Fl h
+Disable printing host-specific information, such as the
+server software version or hostname, in server messages.
+.It Fl L
+Set the logging parameters. This option may be specified many times to enable
+different logging features. The possible values of
+.Ar logparam
+are:
+.Bl -tag -width anon-abs
+.It Cm anon-abs
+Pathnames of the transferred files in the
+.Cm anon
+.Xr xferlog 5
+format (used for anonymous file downloads) will be interpreted as pathnames in
+the real file system.
+.It Cm wu-abs
+If the FTP session has been chrooted, pathnames of the transferred files in the
+original and extended wu-ftpd
+.Xr xferlog 5
+formats will be interpreted as pathnames in the real file system.
+.El
+.Pp
+In case of the chrooted FTP session the only way to obtain a pathname in the
+real file system is to concatenate the known pathname of the chroot point and a
+pathname of a file in the current chrooted environment. Therefore the
+.Cm anon-abs
+and
+.Cm wu-abs
+parameters should be used with the caution that 
+.Nm
+unable to determine renames of the chroot point in the real file system if they
+occur after the change of the session root.
+.It Fl l
+Each successful and failed
+.Xr ftp 1
+session is logged using syslog with a facility of
+.Dv LOG_FTP .
+The authentication events in some cases are logged with a facility of
+.Dv LOG_AUTH
+or
+.Dv LOG_AUTHPRIV .
+.Pp
+If this option is specified twice, the retrieve (get), store (put), append,
+delete, make directory, remove directory and rename operations and
+their filename arguments are also logged.
+.Pp
+The format, in which the information about the retrieve (get), store (put) and
+append operations will be logged, may be changed to the wu-ftpd style
+.Xr xferlog 5
+one with help of the
+.Fl X
+option.
+.It Fl M
+Prevent anonymous users from creating directories.
+.It Fl m
+Permit anonymous users to overwrite or modify
+existing files if allowed by file system permissions.
+By default, anonymous users cannot modify existing files;
+in particular, files to upload will be created under a unique name.
+.It Fl O
+Put server in write-only mode for anonymous users only.
+RETR is disabled for anonymous users, preventing anonymous downloads.
+This has no effect if
+.Fl o
+is also specified.
+.It Fl o
+Put server in write-only mode.
+RETR is disabled, preventing downloads.
+.It Fl P
+When
+.Fl D
+is specified, accept connections at
+.Ar port ,
+specified as a numeric value or service name, instead of at the default
+.Dq ftp
+port.
+.It Fl p
+When
+.Fl D
+is specified, write the daemon's process ID to
+.Ar file .
+.It Fl R
+With this option set,
+.Nm
+will revert to historical behavior with regard to security checks on
+user operations and restrictions on PORT requests.
+Currently,
+.Nm
+will only honor PORT commands directed to unprivileged ports on the
+remote user's host (which violates the FTP protocol specification but
+closes some security holes).
+.It Fl r
+Put server in read-only mode.
+All commands which may modify the local file system are disabled.
+.It Fl S
+With this option set,
+.Nm
+logs all file transfers to the file
+.Pa /var/log/ftpd
+when this file exists. This file name may be overridden in the virtual hosting
+configuration file. The possible values of
+.Ar logtype
+are:
+.Bl -tag -width wu-orig
+.It Cm anon
+Server logs only anonymous file downloads in its own
+.Xr xferlog 5
+format.
+.It Cm wu-orig
+Log all file transfers in the original wu-ftpd
+.Xr xferlog 5
+format.
+.It Cm wu-ext
+Log all file transfers in the extended wu-ftpd style
+.Xr xferlog 5
+format. In this case the information about restarted downloads and about
+appends will also be available.
+.El
+.It Fl T
+A client may also request a different timeout period;
+the maximum period allowed may be set to
+.Ar timeout
+seconds with the
+.Fl T
+option.
+The default limit is 2 hours.
+.It Fl t
+The inactivity timeout period is set to
+.Ar timeout
+seconds (the default is 15 minutes).
+.It Fl U
+This option instructs ftpd to use data ports in the default port range
+instead of in the high port range.
+Such a change may be useful for some specific firewall configurations.
+.Pp
+Please note that the conception of various port ranges, whose are used to
+selecting a local port number, may not be implemented in some operating
+systems. Also both port ranges may be identical by default. See the
+.Cm NOTES
+section for more information about the implementation of this feature.
+.It Fl u
+The default file creation mode mask is set to
+.Ar umask ,
+which is expected to be an octal numeric value.
+Refer to
+.Xr umask 2
+for details. See also the
+.Cm NOTES
+section for the information about the implementation of this feature in ports
+of this
+.Nm .
+.It Fl v
+A synonym for
+.Fl d .
+.It Fl W
+Do not log FTP sessions to
+.Pa /var/log/wtmp .
+.It Fl X
+Log all file transfers to the syslog in the wu-ftpd style
+.Xr xferlog 5
+format. File transfers will be logged regardless of the logging state which is
+set by the
+.Fl l
+option, but if the
+.Fl l
+option is specified twice, the information about the retrieve (get), store
+(put) and append operations will be logged in this format.
+.Pp
+The possible values of
+.Ar logtype
+are:
+.Bl -tag -width wu-orig
+.It Cm wu-orig
+Log all file transfers in the original wu-ftpd format.
+.It Cm wu-ext
+Log all file transfers in the extended wu-ftpd style format. In this case the
+information about restarted downloads and about appends will also be available.
+.El
+.It Fl z
+Configure the TLS/SSL security mechanism. This option may be specified many
+times to set different security parameters. The possible values of
+.Ar secparam
+are:
+.Bl -tag -width indent
+.Pp
+Security policy options
+.It Cm secure
+Don't fall back into the non-secure mode if the TLS/SSL handshake fails.
+.It Cm nosecure
+Disable the TLS/SSL encryption at all and allow only non-secure clients.
+.It Protocol negotiation options
+.It Cm tls
+Use only the RFC2228-compliant FTP-TLS negotiation mode; don't try to negotiate
+something different.
+.It Cm ssl
+Use only the FTP-SSL compatibility mode (for early implementations of the
+FTP-SSL upgrade); don't try to negotiate something different.
+.El
+.Pp
+By default both FTP-TLS and FTP-SSL security extensions and the non-secure
+standard mode are allowed.
+.Pp
+Options inside both groups above are mutually exclusive, but a protocol
+negotiation option may be used after a security policy option to specify
+the security extension to be used (in this case it overrides the
+.Cm nosecure
+option and turns on the TLS/SSL encryption with the selected negotiation mode).
+.Pp
+User policy options
+.Bl -tag -width indent
+.It Cm refnu
+Require the TLS/SSL encryption for non-anonymous users.
+.It Cm defau
+Disable the TLS/SSL encryption for anonymous users.
+.El
+.Pp
+X.509 certificate options
+.Pp
+Basic options
+.Bl -tag -width indent
+.It Cm verify=\fIlevel\fR
+Set the X.509 certificate verification level. Possible values are:
+.br
+\fI0\fR (default) - the server will not send the client certificate request to
+the client, so the client will not send the certificate.
+.br
+\fI1\fR - the server sends the client certificate request to the client.
+The certificate returned (if any) is checked. If the verification process
+fails, the TLS/SSL handshake is immediately terminated.
+.br
+\fI2\fR - the server sends the client certificate request to the client.
+If the client did not return the certificate or if the verification process
+fails, the TLS/SSL handshake is immediately terminated.
+.It Cm cert=\fIcertfile\fR
+The certificate to use. This certificate will be passed to the client. If it is
+not specified, it will be default to \fIftpd.pem\fR.
+.It Cm key=\fIkeyfile\fR
+The private key that matches the certificate specified by the
+.Cm cert
+option. If this is not specified (but
+.Cm cert
+is), the 
+.Cm cert=\fIcertfile\fR
+will be searched for the private key. Both files are assumed to be in
+PEM format. Default is \fIftpd.pem\fR.
+.El
+.Pp
+If the client certificate is presented for the control connection,
+.Nm
+expects that the certificate presented for the data connection must match with
+it.
+.Pp
+Alternate verify locations
+.Bl -tag -width indent
+.It Cm CAfile=\fIcafile\fR
+The file that contains the trusted CA certificate in PEM format. The file can
+contain several CA certificates.
+.It Cm CApath=\fIcapath\fR
+The directory that contains trusted CA certificates in PEM format. Each file
+contains one CA certificate. The files are looked up by the CA subject name
+hash value, which must hence be available. If more than one CA certificate with
+the same name hash value exist, the extension must be different
+(e.g. 9d66eef0.0, 9d66eef0.1 etc). The search is performed in the ordering of
+the extension number.
+.It Cm CRLfile=\fIcrlfile\fR
+The file that contains the Certificate Revocation List (CRL) in PEM format. The
+file can contain several CRLs.
+.It Cm CRLpath=\fIcrlpath\fR
+The directory that contains CRLs in PEM format. Each file contains one CRL. The
+files are looked up by the issuer name hash value, which must hence be
+available. If more than one CRL with the same name hash value exist, the
+extension must be different (e.g. 9d66eef0.r0, 9d66eef0.r1 etc). The search is
+performed in the ordering of the extension number.
+.El
+.Pp
+If none of both
+.Cm CAfile
+and
+.Cm CApath 
+(or
+.Cm CRLfile
+and
+.Cm CRLpath )
+are specified, both \fIcafile\fR and \fIcapath\fR (or \fIcrlfile\fR and
+\fIcrlpath\fR) will be set to default values, otherwise each of \fIcafile\fR
+and \fIcapath\fR (\fIcrlfile\fR and \fIcrlpath\fR) will be set to the specified
+value or blank if not specified. The default values are \fIcert.pem\fR and
+\fIcrl.pem\fR files for \fIcafile\fR and \fIcrlfile\fR, respectively, and
+\fIcerts/\fR subdirectory in OpenSSL directory is the default value for both
+\fIcapath\fR and \fIcrlpath\fR.
+.Pp
+When looking up CA certificates, they will be searched in \fIcafile\fR, then
+those in \fIcapath\fR. Certificate matching is done based on the subject name,
+the key identifier (if present), and the serial number as taken from the
+certificate to be verified. If the first certificate which matching the
+parameters is found, the verification process will be performed.
+.Pp
+CRLs are looked up in the similar order: they will be searched in
+\fIcrlfile\fR, then those in \fIcrlpath\fR. CRL matching is done based on the
+issuer name. If the first CRL for this issuer is found, the verification
+process will be performed.
+.Pp
+X.509 certificate-based user authentication
+.Bl -tag -width indent
+.It Cm auth=\fIauthmode\fR
+Enable support for the X.509 certificate-based user authentication. Possible
+values of the authentication mode are:
+.br
+\fI0\fR (default) - only the standard (typically password-based) authentication
+is allowed.
+.br
+\fI1\fR - the certificate-based authentication is sufficient; the fallback to
+the standard authentication is allowed in case of failure.
+.br
+\fI2\fR - only the certificate-based authentication is allowed.
+.br
+\fI3\fR - both certificate-based and standard authentications are required.
+.El
+.Pp
+The support for the user authentication that is based upon the authentication
+information obtained from X.509 certificates is possible only for
+TLS/SSL-enabled FTP clients; standard FTP clients will always be authenticated
+through the standard authentication procedure. This type of authentication
+implies that the server must obtain the certificate from the client, and hence
+the certificate verification level (described above) must have the non-zero
+value.
+.Pp
+The client must still issue the login name. If the X.509 authentication was
+successful and the fallback to the standard authentication is not required, the
+user will be successfully authenticated without asking for the password.
+.Pp
+If the certificate-based authentication was used and the standard
+authentication was not, PAM modules (see
+.Xr pam 8 )
+from the authentication management group will not be used. PAM modules from the
+account management group will always be used for all authentication modes. The
+.Xr login.conf 5
+(see also the
+.Cm NOTES
+section) functionality is also will be used for all modes.
+.Pp
+Relations between client certificates and system login names are guided by the
+.Pa /etc/x509.auth
+file. Each relation is defined by its own line that contains a number of fields
+separated by colons:
+.Bl -tag -offset indent -width userlist
+.It service
+The name of the service associated with this entry. The
+.Nm
+utility uses the
+.Dq ftpd
+service name.
+.It action
+Specifies the action, which will be executed if the client information matches
+with corresponding fields of the configuration line. This field may be
+presented by one of the following keywords:
+.br
+.Dq allow
+- the certificate is allowed to use the requested login name; the
+authentication procedure succeeds.
+.br
+.Dq deny
+- the certificate is denied to use requested login name; the authentication
+procedure fails.
+.It userlist
+Contains a comma-separated list of login names those will be compared with the
+login name issued by the client.
+.Pp
+If the login name begins with the `/' symbol, it designates a field of the
+X.509 client certificate that includes the User ID of the end user. This
+designation may be specified in two forms:
+.br
+``/ObjType'' - the field "ObjType" will be extracted and used as the login
+name.
+.br
+``//ObjType[/domain.name]'' - the field "ObjType" will be treated as an
+Internet email address. In this case the part of the email address before `@'
+symbol will be used as the login name; if ``domain.name'' is specified, the
+part after `@' symbol will be verified against it (the ``domain.name'' part is
+not case-sensitive).
+.Pp
+If the login name is presented by the `*' symbol, it matches with any login
+name issued by the client.
+.It certificate
+Describes the X.509 client certificate that is authorized to use the userlist.
+If this field isn't starts with a directive, it contains the one line
+distinguished name (the certificate's subject name). The directives are:
+.br
+``-r'' - the rest part is interpreted as a regular expression (see
+.Xr regex 3 )
+that describes the distinguished name and can match multiple certificates, each
+of which is authorized to use the userlist.
+.br
+``-f'' - the rest part is interpreted as a file name that contains the X.509
+certificate or a set of certificates in PEM format, each of which is authorized
+to use the userlist. For security reasons this file will be used for the
+authentication only if it is a regular file and is not a symbolic link. If the
+file name begins with the tilde character (`~'), then this symbol will be
+substituted by the login directory that is associated with the login name
+issued by the client.
+.br
+``-p'' - this directive allows the usage of an external program to check the
+certificate. The rest part of the field is interpreted as the full file name of
+the program. The external authentication program must accept the login name and
+the certificate from stdin and return the results of the authentication (a
+reply code and the login name associated with the certificate) to stdout.
+.El
+.Pp
+Lines beginning with the `#' symbol are ignored and can be used to include
+comments. The components of fields are case-sensitive (the exception is noted
+above); spaces are not ignored and are treated as parts of respective
+components. All fields are mandatory, lines with unrecognized tokens (keywords,
+directives, etc.) in one or more fields are ignored.
+.Pp
+Fields of each line and userlists are proceeded from left to right. The file
+itself is proceeded line-by-line from top to bottom until the first match
+for the given service in the 'userlist' and 'certificate' fields with
+corresponding values those are provided by the client.
+.Pp
+If the match is found, the 'action' field of the configuration line will be
+analized and the authentication procedure succeeds or fails depending to its
+value. If no match is found, the certificate-based user authentication fails.
+.Pp
+Other TLS/SSL specific options
+.Bl -tag -width indent
+.It Cm cipher=\fIcipherlist\fR
+The cipher preference list. The \fIcipherlist\fR consists of one or more cipher
+strings separated by colons. The actual cipher string can take several different
+forms. It can consists of a single cipher suite. It can represent a list of
+cipher suites containing a certain algorithm, or cipher suites of a certain
+type.
+.Pp
+Lists of cipher suites can be combined in a single cipher string using the
+\fI+\fR character. It is used as the logical \fIand\fR operation.
+.Pp
+Each cipher string can be optionally preceded by the characters \fI!\fR,
+\fI-\fR or \fI+\fR. If \fI!\fR is used then the ciphers are permanently deleted
+from the list. If \fI-\fR is used then the ciphers are deleted from the list,
+but some of all of them can be added again by later options. If \fI+\fR is used
+then the ciphers are moved to the end of the list. Additionally the cipher
+string \fI@STRENGTH\fR can be used at any point to sort the current cipher list
+in order of an encryption algorithm key length.
+.Pp
+The following is the short list of permitted cipher strings and their meanings,
+see the accompanying documentation for more information.
+.br
+\fIDEFAULT\fR - The default cipher list (determined at a compilation time).
+.br
+\fIALL\fR - All cipher suites except the ciphers those offering no encryption.
+.br
+\fIHIGH\fR - "High" encryption cipher suites (those with key lengths larger
+than 128 bits).
+.br
+\fIMEDIUM\fR - "Medium" encryption cipher suites (those using 128 bit
+encryption).
+.br
+\fILOW\fR - "Low" encryption cipher suites (those using 64 or 56 bit encryption
+algorithms but excluding export cipher suites).
+.br
+\fIEXP\fR, \fIEXPORT\fR - Export encryption algorithms (including 40 and 56
+bits algorithms).
+.br
+\fITLSv1\fR, \fISSLv3\fR, \fISSLv2\fR - TLS v1.0, SSL v3.0 or SSL v2.0 cipher
+suites respectively.
+.It Cm logfile=\fIlogfile\fR
+The file where the TLS/SSL debugging information will be logged.
+.It Cm debug
+Turn on the TLS/SSL debugging code (it requires the
+.Cm logfile
+option).
+.Pp
+.El
+Compatibility options
+.Bl -tag -width indent
+.It Cm apbu
+Allow switching of the protection state of data connections before the
+completed user login. By default this operation is disabled until the user will
+be successfully logged in, and it is allowed at any time after that.
+.It Cm uorc
+Use "334" reply code in the FTP-SSL compatibility mode instead of "234". It may
+be useful as a workaround for some early client implementations of the FTP-SSL
+upgrade.
+.El
+.El
+.Pp
+The file
+.Pa /var/run/nologin
+(in FreeBSD) or 
+.Pa /etc/nologin
+(in Linux, see also
+.Xr pam 8 )
+can be used to disable ftp access.
+If the file exists,
+.Nm
+displays it and exits.
+If the file
+.Pa /etc/ftpwelcome
+exists,
+.Nm
+prints it before issuing the
+.Dq ready
+message.
+If the file
+.Pa /etc/ftpmotd
+exists,
+.Nm
+prints it after a successful login.  Note the motd file used is the one
+relative to the login environment.  This means the one in
+.Pa ~ftp/etc
+in the anonymous user's case.
+.Pp
+The ftp server currently supports the following ftp requests.
+The case of the requests is ignored.  Requests marked [RW] are
+disabled if
+.Fl r
+is specified.
+.Bl -column "Request" -offset indent
+.It Sy Request Ta Sy "Description"
+.It ABOR Ta "abort previous command"
+.It ACCT Ta "specify account (ignored)"
+.It ALLO Ta "allocate storage (vacuously)"
+.It APPE Ta "append to a file [RW]"
+.It AUTH Ta "specify authentication/security mechanism"
+.It CDUP Ta "change to parent of current working directory"
+.It CWD Ta "change working directory"
+.It DELE Ta "delete a file [RW]"
+.It EPRT Ta "specify data connection port, multiprotocol"
+.It EPSV Ta "prepare for server-to-server transfer, multiprotocol"
+.It FEAT Ta "return list of supported extensions"
+.It HELP Ta "give help information"
+.It LIST Ta "give list files in a directory" Pq Dq Li "ls -lgA"
+.It LPRT Ta "specify data connection port, multiprotocol"
+.It LPSV Ta "prepare for server-to-server transfer, multiprotocol"
+.It MDTM Ta "show last modification time of file"
+.It MKD Ta "make a directory [RW]"
+.It MODE Ta "specify data transfer" Em mode
+.It NLST Ta "give name list of files in directory"
+.It NOOP Ta "do nothing"
+.It OPTS Ta "specify the behavior of FTP commands"
+.It PASS Ta "specify password"
+.It PASV Ta "prepare for server-to-server transfer"
+.It PBSZ Ta "specify protection buffer size"
+.It PORT Ta "specify data connection port"
+.It PROT Ta "specify data connection protection level"
+.It PWD Ta "print the current working directory"
+.It QUIT Ta "terminate session"
+.It REST Ta "restart incomplete transfer"
+.It RETR Ta "retrieve a file"
+.It RMD Ta "remove a directory [RW]"
+.It RNFR Ta "specify rename-from file name [RW]"
+.It RNTO Ta "specify rename-to file name [RW]"
+.It SITE Ta "non-standard commands (see next section)"
+.It SIZE Ta "return size of file"
+.It STAT Ta "return status of server"
+.It STOR Ta "store a file [RW]"
+.It STOU Ta "store a file with a unique name [RW]"
+.It STRU Ta "specify data transfer" Em structure
+.It SYST Ta "show operating system type of server system"
+.It TYPE Ta "specify data transfer" Em type
+.It USER Ta "specify user name"
+.It XCUP Ta "change to parent of current working directory (deprecated)"
+.It XCWD Ta "change working directory (deprecated)"
+.It XMKD Ta "make a directory (deprecated) [RW]"
+.It XPWD Ta "print the current working directory (deprecated)"
+.It XRMD Ta "remove a directory (deprecated) [RW]"
+.El
+.Pp
+The following non-standard or
+.Ux
+specific commands are supported
+by the
+SITE request.
+.Pp
+.Bl -column Request -offset indent
+.It Sy Request Ta Sy Description
+.It UMASK Ta change umask, e.g. ``SITE UMASK 002''
+.It IDLE Ta set idle-timer, e.g. ``SITE IDLE 60''
+.It CHMOD Ta "change mode of a file [RW], e.g. ``SITE CHMOD 755 filename''"
+.It MD5 Ta "report the files MD5 checksum, e.g. ``SITE MD5 filename''"
+.It HELP Ta give help information
+.El
+.Pp
+Note: SITE requests are disabled in case of anonymous logins.
+.Pp
+The remaining ftp requests specified in Internet RFC 959
+are
+recognized, but not implemented.
+MDTM and SIZE are not specified in RFC 959, but will appear in the
+next updated FTP RFC.
+To avoid possible denial-of-service attacks, SIZE requests against
+files larger than 10240 bytes will be denied if the current transfer
+type is ASCII.
+.Pp
+The ftp server will abort an active file transfer only when the
+ABOR
+command is preceded by a Telnet "Interrupt Process" (IP)
+signal and a Telnet "Synch" signal in the command Telnet stream,
+as described in Internet RFC 959.
+If a
+STAT
+command is received during a data transfer, preceded by a Telnet IP
+and Synch, transfer status will be returned.
+.Pp
+The
+.Nm
+utility interprets file names according to the
+.Dq globbing
+conventions used by
+.Xr csh 1 .
+This allows users to utilize the metacharacters
+.Dq Li \&*?[]{}~ .
+.Pp
+The
+.Nm
+utility authenticates users according to six rules.
+.Pp
+.Bl -enum -offset indent
+.It
+The login name must be in the user database and not have a null password
+(the exception is possible if PAM modules from the authentication management
+group are used to set up a template user account; see below).
+If a client is connected via TLS/SSL and the X.509 certificate-based
+authentication is sufficient, it will be used instead of the password-based
+one. Otherwise the standard authentication will be used.
+.Pp
+In this case a password must be provided by the client before any
+file operations may be performed.
+If the user has an S/Key key, the response from a successful USER
+command will include an S/Key challenge.
+The client may choose to respond with a PASS command giving either
+a standard password or an S/Key one-time password.
+The server will automatically determine which type of
+password it has been given and attempt to authenticate accordingly.
+See
+.Xr key 1
+for more information on S/Key authentication.
+S/Key is a Trademark of Bellcore.
+.Pp
+See also the
+.Cm NOTES
+section for the information about built-in implementation of S/Key in ports of
+this
+.Nm .
+.Pp
+If
+.Xr pam 8
+is used for the authentication, PAM modules from the authentication management
+group may set up some user account as the template. This user account will be
+used in all routines for whose the user account (the user record) in the system
+user database is mentioned, so an FTP user will have access privileges of
+this system user account.
+.It
+The login name must not appear in the file
+.Pa /etc/ftpusers ,
+otherwise the login attempt will be refused without asking for a password.
+.It
+The user account name must not be a member of a group specified in the file
+.Pa /etc/ftpusers ,
+otherwise the login attempt will be refused without asking for a password.
+Entries in this file interpreted as group names are prefixed by an "at"
+.Ql \&@
+sign.
+.It
+The user account must have a standard shell returned by
+.Xr getusershell 3 .
+.It
+If the user account name appears in the file
+.Pa /etc/ftpchroot ,
+or the user account is a member of a group with a group entry in this file,
+i.e. one prefixed with
+.Ql \&@ ,
+the session's root will be changed to the directory specified
+in this file or to the user's login directory by
+.Xr chroot 2
+as for an
+.Dq anonymous
+or
+.Dq ftp
+account (see next item).
+See
+.Xr ftpchroot 5
+for a detailed description of the format of this file.
+This facility may also be triggered by enabling the boolean "ftp-chroot"
+capability in
+.Xr login.conf 5
+(see also the
+.Cm NOTES
+section).
+However, the user must still supply a password.
+This feature is intended as a compromise between a fully anonymous
+account and a fully privileged account.
+The account should also be set up as for an anonymous account.
+.It
+If the user name is
+.Dq anonymous
+or
+.Dq ftp ,
+an
+anonymous ftp account must be present in the user
+database (user
+.Dq ftp ) .
+In this case the user is allowed
+to log in by specifying any password (by convention an email address for
+the user should be used as the password).
+When the
+.Fl S
+option is set, all transfers are logged as well.
+.El
+.Pp
+In the last case,
+.Nm
+takes special measures to restrict the client's access privileges.
+The server performs a
+.Xr chroot 2
+to the home directory of the
+.Dq ftp
+user.
+As a special case if the
+.Dq ftp
+user's home directory pathname contains the
+.Pa /./
+separator,
+.Nm
+uses its left-hand side as the name of the directory to do
+.Xr chroot 2
+to, and its right-hand side to change the current directory to afterwards.
+A typical example for this case would be
+.Pa /usr/local/ftp/./pub .
+In order that system security is not breached, it is recommended
+that the
+.Dq ftp
+subtree be constructed with care, following these rules:
+.Bl -tag -width "~ftp/pub" -offset indent
+.It Pa ~ftp
+Make the home directory owned by
+.Dq root
+and unwritable by anyone.
+.It Pa ~ftp/etc
+Make this directory owned by
+.Dq root
+and unwritable by anyone (mode 555).
+The files pwd.db (see
+.Xr passwd 5 )
+and
+.Xr group 5
+must be present for the
+.Xr ls 1
+command to be able to produce owner names rather than numbers.
+The password field in
+.Xr passwd 5
+is not used, and should not contain real passwords.
+The file
+.Pa ftpmotd ,
+if present, will be printed after a successful login.
+These files should be mode 444.
+.It Pa ~ftp/pub
+This directory and the subdirectories beneath it should be owned
+by the users and groups responsible for placing files in them,
+and be writable only by them (mode 755 or 775).
+They should
+.Em not
+be owned or writable by
+.Dq ftp
+or its group, otherwise guest users
+can fill the drive with unwanted files.
+.El
+.Pp
+If the system has multiple IP addresses,
+.Nm
+supports the idea of virtual hosts, which provides the ability to
+define multiple anonymous ftp areas, each one allocated to a different
+internet address.
+The file
+.Pa /etc/ftphosts
+contains information pertaining to each of the virtual hosts.
+Each host is defined on its own line which contains a number of
+fields separated by whitespace:
+.Bl -tag -offset indent -width hostname
+.It hostname
+Contains the hostname or IP address of the virtual host.
+.It user[:anondir]
+Contains a user record in the system user database.
+As with normal anonymous ftp, this user's access uid, gid and group
+memberships determine file access to the anonymous ftp area.
+If anondir is specified, it determines the anonymous ftp area (to which any
+user is chrooted on login), otherwise the anonymous ftp area is determined by
+the home directory defined for the account, or by the directory specified in
+the
+.Xr ftpchroot 5
+file.
+.It statfile
+File to which all file transfers are logged, which
+defaults to
+.Pa /var/log/ftpd .
+.It welcome
+This file is the welcome message displayed before the server ready
+prompt.
+It defaults to
+.Pa /etc/ftpwelcome .
+.It motd
+This file is displayed after the user logs in.
+It defaults to
+.Pa /etc/ftpmotd .
+.El
+.Pp
+Lines beginning with a '#' are ignored and can be used to include
+comments.
+.Pp
+Defining a virtual host for the primary IP address or hostname
+changes the default for ftp logins to that address.
+The 'user', 'statfile', 'welcome' and 'motd' fields may be left
+blank, or a single hyphen '-' used to indicate that the default
+value is to be used.
+.Pp
+As with any anonymous login configuration, due care must be given
+to setup and maintenance to guard against security related problems.
+.Pp
+The
+.Nm
+utility has internal support for handling remote requests to list
+files, and will not execute
+.Pa /bin/ls
+in either a chrooted or non-chrooted environment.  The
+.Pa ~/bin/ls
+executable need not be placed into the chrooted tree, nor need the
+.Pa ~/bin
+directory exist.
+.Sh FILES
+.Bl -tag -width ".Pa /var/log/xferlog" -compact
+.It Pa /etc/ftpusers
+List of unwelcome/restricted users.
+.It Pa /etc/ftpchroot
+List of normal users who should be chroot'd.
+.It Pa /etc/ftphosts
+Virtual hosting configuration file.
+.It Pa /etc/ftpwelcome
+Welcome notice.
+.It Pa /etc/ftpmotd
+Welcome notice after login.
+.It Pa /etc/x509.auth
+Configuration file for relations between client certificates and system login
+names.
+.It Pa /var/run/nologin or /etc/nologin
+Displayed and access refused.
+.It Pa /var/log/ftpd
+Log file for all file transfers.
+.El
+.Sh SEE ALSO
+.Xr ftp 1 ,
+.Xr ftps 1 ,
+.Xr key 1 ,
+.Xr openssl 1 ,
+.Xr umask 2 ,
+.Xr getusershell 3 ,
+.Xr regex 3 ,
+.Xr ftpchroot 5 ,
+.Xr login.conf 5 ,
+.Xr xferlog 5 ,
+.Xr inetd 8 ,
+.Xr pam 8 ,
+.Xr syslogd 8
+.Sh NOTES
+The default value of the umask defined in
+.Nm
+is 022 (write access for the owner only). In FreeBSD the value of the umask
+specified through the
+.Fl u
+command-line option (and the default value too) may be overridden by the
+.Xr login.conf 5 .
+.Pp
+The
+.Fl U
+command-line option instructs ftpd to use data ports in the range of
+.Dv IP_PORTRANGE_DEFAULT
+instead of in the range of
+.Dv IP_PORTRANGE_HIGH .
+This option is virtual no-op in FreeBSD 5.0 and above (both port ranges are
+indentical by default). The conception of various port ranges is not
+implemented in Linux, so in this operating system the
+.Fl U
+option has no effect. See
+.Xr ip 4
+in FreeBSD or
+.Xr ip 7
+in Linux for more information about available port ranges.
+.Pp
+The support for the
+.Xr login.conf 5
+is available only in BSD systems. The general part of the capabilities of the
+.Xr login.conf 5
+may be implemented with help of 
+.Xr pam 8 .
+The capabilities, those are distinctive to the
+.Nm , 
+are also implemented with help of its own functionality.
+.Pp
+Currently the support for S/Key is not available in both FreeBSD and Linux
+ports.
+.Sh BUGS
+The server must run as the super-user
+to create sockets with privileged port numbers.  It maintains
+an effective user id of the logged in user, reverting to
+the super-user only when binding addresses to sockets.  The
+possible security holes have been extensively
+scrutinized, but are possibly incomplete.
+.Sh HISTORY
+The
+.Nm
+utility appeared in
+.Bx 4.2 .
+IPv6 support was added in WIDE Hydrangea IPv6 stack kit.
+.Pp
+Modifications for TLS/SSL support, RFC2228 features and Linux port were made
+by Nick Leuta <skynick@mail.sc.ru>

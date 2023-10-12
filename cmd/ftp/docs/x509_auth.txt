@@ -1,0 +1,503 @@
+BSDftpd-ssl project  <URL: http://bsdftpd-ssl.sc.ru/ >
+
+                   User authentication using X.509 certificates
+
+Author: Nick Leuta <skynick@mail.sc.ru>
+30 December, 2003
+
+Copyright (c) 2002, 2003 Nick Leuta. All Rights Reserved.
+
+Permission is granted to copy, distribute and/or modify this document under the
+terms of the full copyright statement that is included in this document.
+
+CONTENTS
+========
+1. Introduction
+2. Authentication overview
+3. Mapping the client X.509 certificate to the User ID
+4. Configuration file for relations between the User IDs and the certificates
+5. Usage of external authentication programs
+6. Examples of configurations
+7. Limitations
+8. References
+Full copyright statement
+
+1. Introduction
+---------------
+This document describes an implementation of X.509 certificates to control user
+access to TLS/SSL-aware services.
+
+ITU-T Recommendation X.509 defines a framework for public-key certificates and
+attribute certificates. The well-known application of the X.509 certificates
+today is the TLS/SSL security protocol that provides privacy and authentication
+for a network traffic. TLS 1.0 (Transport Layer Security Version 1.0) protocol
+itself is based on the SSL 3.0 (Secure Socket Layer Version 3.0) Protocol
+Specification as published by Netscape Communications Corporation. TLS/SSL is
+now widely adopted in many Internet applications, such as web, e-mail and LDAP
+software.
+
+Some X.509 certificate basics are contained in the cert-basics.txt file, and
+a generic information about the X.509 certificate management with help of
+OpenSSL - the popular free TLS/SSL toolkit, may be obtained from the
+cert-howto.txt file.
+
+2. Authentication overview
+--------------------------
+Authentication is the means by which one party proves its identity to another.
+There are several types of user authentication, for example Kerberos, SRP, NTLM,
+X.509 Certificates, Public Keys and Password based authentication. Three of
+them are described below.
+
+Password Based
+The familiar process of logging in with a username and password is the most
+common authentication method. Passwords, Passphrases, and so on called Keyboard
+Interactive authentication methods are the old-fashioned traditional means of
+proving end-user identity.
+
+The main disadvantage if this method is that username and password are
+transmitted in clear text and if it is doing over an insecure network
+environment, they can be "sniffed" by anybody who has access to any of the
+components of the network path (for example, by anybody who has a PC on a
+non-switched Ethernet network over which this information passes). Another
+disadvantage is that there are no method of verification of the identity of
+both client and server hosts.
+
+These methods are still in use with secure connections whether they are Telnet,
+FTP, or even SSH. They become safer to use when some form of encrypting cipher
+suite protects the connection. However, it should never be assumed that the
+transmission of a password to a host is safe. For example, the host daemon
+process could have been replaced by one that collects and transmits passwords
+to an attacker. 
+
+Public Key
+Several popular security protocols including SSH rely on a loosely managed form
+of authentication based on the same asymmetric cryptography used within X.509
+public key certificates. The technique is to generate a public and private key
+pair and give the public key away as a means of authenticating the holder of
+the private key. The prime difference between this and an X.509 certificate is
+that the public key is not bound to any information providing the identity of
+the holder nor does it contain any information that can be used to limit the
+lifetime of the public key or sources of information that can be used to
+determine if the public key has been compromised or revoked for some other
+reason.
+
+X.509 Certificates
+When TLS/SSL is used to provide security, an authentication of the server and
+optionally the client can be performed using X.509 public key certificates.
+Certificates are used to exchange a public key for use in establishing an
+encrypted connection and can be verified against a known trusted Root
+Certificate and a Certificate Revocation List (CRL) to indicate its
+authenticity and validity. The contents of the certificate can then be used to
+determine the identity of the remote service or the client.
+
+X.509 certificates also may be used for user authentication purposes. The
+certificate-based user authentication may be performed by two ways: to specify
+a mapping from the client certificate to the User ID, or to specify a method to
+check a validity of the provided by client User ID and certificate pair. If the
+mapping is used, it's possible to automatically login the user to its account
+or resources. In most generic case the mapping can be represented by
+many-to-one dependence between the set of certificates and the set of login
+names. The way of checking the validity of provided User ID and certificate
+pair requires from the client to issue the login name, after that the user may
+be authenticated without asking for a password. In some cases the checking can
+be done on top of mapping or to be the mapping itself, but in most generic case
+the relation between the set of login names and the set of certificates can be
+represented by many-to-many dependence.
+
+Although the FTP protocol insists the login name be provided by the client, it
+allows the FTP server to use authentication credentials from the client's
+certificate and to perform the authentication without asking for a password.
+
+BSDftpd-ssl provides a generic mechanism for the customization of the
+certificate-based authentication scheme by allowing to use both of described
+above ways to perform the certificate-based authentication.
+
+Please note that irrespective of the used scheme it's required to choose the
+set of trusted Root Certificates very carefully and it's vital to always have
+actual CRLs for all of the Roots from this set.
+
+3. Mapping the client X.509 certificate to the User ID
+------------------------------------------------------
+There are several commonly used approaches to map a certificate to the User ID.
+
+They may be consolidated into next groups:
+Designate a field of the certificate to store the User ID
+  Some fields of the X.509 client certificate can include the User ID, for
+  example "x500UniqueIdentifier" and "subjectAltName". The content of such
+  field may be extracted and used as the User ID.
+
+  The "x500UniqueIdentifier" may include the User ID itself. The problem with
+  this approach is the "x500UniqueIdentifier" may not be very unique. For
+  example, you do not managing your own Certificate Authority (CA) and you
+  refer all of your clients to request X.509 certificates from one of the
+  commercial CAs. It is possible that another site is doing exactly the same
+  thing and that this other site has a user with the same User ID. In this
+  circumstance, simply verifying the certificate against the CA certificate and
+  extracting the "x500UniqueIdentifier" results in a security hole.
+
+  The "subjectAltName" field of the X.509 certificate can include the e-mail
+  address of the user instead of simply the User ID of the user. In this case
+  the users with one name, for example "username", but from different sites,
+  would have different e-mail addresses, for example "username@mydomain.com"
+  for your site and "username@someotherdomain.com" for another site. If the
+  mapping uses the "subjectAltName", it's possible to extract the contents of
+  the "subjectAltName", verify the domain is correct and then return the
+  User ID. This method is safer than the "x500UniqueIdentifier", but it is
+  still placing a lot of trust in the CA. If you are not issuing the
+  certificates yourself, you'll have to trust that the CA has a legitimate
+  method for verifying that the e-mail address belongs to the user for whom the
+  CA is signing the certificate.
+
+Specify the mapping between some field of the certificate and the User ID
+  This approach is based on a possibility to set a correspondence between the
+  User ID and a field that uniquely identifies the certificate's entity.
+  Usually this field is a subject name.
+
+  This approach is still placing a lot of trust in the CA, but in a much lesser
+  degree then the approach described above.
+
+Map the entire certificate to the User ID
+  The main disadvantage of the approach described above is that the subject
+  name alone does not uniquely identify the certificate because a subject can
+  own multiple certificates.
+
+  It's possible to lookup the entire certificates in some database (for
+  example, in a local file or in LDAP server) and to retrieve the User ID based
+  on a result of the lookup.
+
+It's also useful to combine some of the approaches described above into one
+authentication scheme.
+
+4. Configuration file for relations between the User IDs and the certificates
+-----------------------------------------------------------------------------
+In case of the X.509 certificate-based user authentication the User ID is the
+user's login name. BSDftpd-ssl searches relations between client certificates
+and system login names in the /etc/x509.auth file. Each relation is defined by
+its own line that contains a number of fields. Lines beginning with a `#' are
+ignored and can be used to include comments.
+
+The brief format of the configuration line of the x509.auth file is:
+    service:action:userlist:certificate
+where:
+service
+  The name of the service associated with this line.
+action
+  Specifies the action, which will be executed if the client information
+  matches with corresponding fields of the configuration line.
+userlist
+  Contains a list of login names those will be compared with the login name
+  issued by the client.
+certificate
+  Describes the X.509 client certificate that is authorized to use the
+  userlist.
+
+Fields of each line and userlists are proceeded from the left to the right. The
+file itself is proceeded line-by-line from the top to the bottom until the
+first match for the given service in the "userlist" and "certificate" fields
+with corresponding values those are provided by the client.
+
+If the match is found, the "action" field of the configuration line will be
+analized and the authentication procedure succeeds or fails depending to its
+value. If no match is found in the x509.auth file, the certificate-based user
+authentication fails.
+
+Please note that all field components are case-sensitive (the exception is
+noted below); spaces are not ignored and are treated as parts of respective
+components. All fields are mandatory, lines with unrecognized tokens (keywords,
+directives, etc) in one or more fields are ignored.
+
+The more detailed format is:
+    service:action:login_name1[,login_name2[,...]]:[-r|-f|-p]cert_description
+
+The "service" field is normally the conventional name of the given application.
+For example, "telnetd", "rlogind", "pop3d", "imapd". The BSDftpd-ssl FTP server
+uses the "ftpd" service name.
+
+The "action" field may be presented by one of the following keywords:
+allow
+  The certificate is allowed to use the requested login name; the
+  authentication procedure succeeds.
+deny
+  The certificate is denied to use requested login name; the authentication
+  procedure fails.
+
+If login_nameI (I=1,2,...) isn't started from special symbol and is not
+presented by such symbol, it represents the system account name. The special
+symbols are:
+"/"
+  If login_nameI begins with this symbol, it designates a field of the X.509
+  client certificate that includes the User ID of the end user. The field may
+  be specified by its short or long name.
+
+  The designation may be specified by login_nameI in two forms: "/ObjType" or
+  "//ObjType[/domain.name]". If login_nameI is specified in form "/ObjType",
+  the field "ObjType" will be extracted and used as the system account name.
+  Otherwise, if login_nameI is specified in form "//ObjType[/domain_name]", the
+  field "ObjType" will be treated as an Internet e-mail address that is
+  specified in form "username@host.name". In this case the part of the e-mail
+  address before the "@" symbol ("username") will be used as the system account
+  name; if the Internet domain name ("domain_name") is specified, the part
+  after the "@" symbol ("host.name") will be verified against it. The Internet
+  domain name part is not case-sensitive.
+"*"
+  If login_nameI is presented by this symbol, it matches with any login name
+  issued by the client.
+
+The certificate field of the x509.auth file also may be specified by different
+ways. If this field isn't starts with a directive, the cert_description 
+represents a one-line certificate's subject name that really is the
+distinguished name (DN) of the entity whose public key the certificate
+identifies. It must be specified in form
+   /Field1=Value1/Field2=Value2/.../FieldN=ValueN
+where Field[1-N] names are contained in next set: {C (countryName)| ST
+(stateOrProvinceName)| L (localityName)| O (organization)| OU
+(organizationalUnitName)| CN (commonName)}. This set frequently may also
+contain "emailAddress", although this shouldn't be there.
+
+For example:
+  /C=AU/ST=Some-State/O=Internet Widgits Pty Ltd/CN=user/emailAddress=user@IWPL.com
+
+The sequence order of the Field[1-N] DN components must be the same as provided
+by the "openssl x509" utility (see the cert-howto.txt file for more information
+about the usage of this utility). Only short variants of names of DN components
+are allowed (long ones are listed above for informational purposes). 
+
+The supported directives are:
+-r
+  The cert_description is interpreted as a regular expression (see regex(3) and
+  egrep(1)/grep(1) man pages) that describes the distinguished name and so one
+  cert_description can match multiple certificates, each of which is authorized
+  to use the userlist.
+-f
+  The cert_description is interpreted as a file name that contains the X.509
+  certificate or a set of certificates in PEM format, each of which is
+  authorized to use the userlist. For security reasons this file will be used
+  for the authentication only if it is a regular file and is not a symbolic
+  link. If the file name begins with a tilde character (`~'), then this symbol
+  will be substituted by the login directory that is associated with the login
+  name issued by the client.
+
+  This file has the same format as one described for the file with CA
+  certificates in the "3. Notes" section of the "Locations of trusted CA
+  certificates and CRLs for BSDftpd-ssl" document (located in the verify.txt
+  file).
+-p
+  This directive allows the usage of an external program to check the
+  certificate. The cert_description is interpreted as a full file name of the
+  program. The external authentication program must accept the login name and
+  the certificate from stdin and return results of the authentication (the
+  reply code and the login name that is associated with the certificate) to
+  stdout.
+
+5. Usage of external authentication programs
+--------------------------------------------
+As it was said, the certificate-based user authentication may be performed by
+two ways: by specifying the mapping from the client certificate to the User ID,
+or by specifying the method to check the validity of the provided by the client
+the User ID and the certificate pair. Therefore the interface protocol with
+the external authentication program considers both capabilities.
+
+The key words "MAY", "MUST", "SHOULD" and "SHOULD NOT" that appear in this
+section are to be interpreted as described in RFC 2119.
+
+At a first stage the program MUST read two arguments from stdin with the login
+name and the certificate.
+
+The first argument consists of a variable length character string ending with
+the character sequence <CRLF> (Carriage Return, Line Feed). The string before
+<CRLF> sequence is the login name. If it have a non-zero length, it contains
+the login name issued by the client. In this case the program MUST decide
+whether the certificate is allowed to use the requested login name, or not.
+Otherwise the login name is interpreted as non-specified and the mapping from
+the certificate to the login name is expected. The program may perform the
+mapping or to check only the validity of the certificate.
+
+All following input is interpreted as the second argument - the client
+certificate in PEM format. The certificate is identified by
+
+ -----BEGIN CERTIFICATE-----
+ ... (certificate in base64 encoding) ...
+ -----END CERTIFICATE-----
+
+sequence. Before and after the certificate a text is allowed and it MUST be
+ignored.
+
+At a second stage the program MUST return two responses to stdout with the
+reply code and the mapped login name.
+
+The first response, which contains the reply code, is a three-digital string
+appended by the <CRLF> sequence. The reply code is an acknowledgment (positive
+or negative) from the authentication program to the calling application.
+
+This is a list of the reply codes:
+100 - A generic code for the successful authentication and/or mapping.
+101 - The certificate is allowed to use the requested login name.
+102 - The mapping of the certificate is done and the user is allowed to login.
+103 - The certificate is valid, but the mapping was not performed and it must
+      be done by the calling application.
+200 - A generic code for the failed authentication and/or mapping.
+201 - The certificate is not allowed to use requested login name.
+202 - Can't map the certificate to the login name.
+203 - Can't communicate with the authentication service.
+204 - The mapping of the certificate to the login name isn't supported by the
+      program.
+205 - The checking of the validity of the login name and the certificate pair
+      isn't supported by the program.
+
+The second response consists of the variable length character string ending
+with the <CRLF> sequence. The string before the <CRLF> sequence is the mapped
+login name.
+
+If the program was tried to decide whether the certificate is allowed to use
+the requested login name, or not, the mapped login name MUST be the same as the
+requested login name.
+
+Otherwise, if the requested login name was not specified and so the mapping is
+expected, the program can return the login name that is mapped from the
+certificate by the implemented mapping mode.
+
+The program MAY support only one of the ways to perform the certificate-based
+user authentication. In this case the program MUST return the corresponding
+reply code if an unsupported way is requested.
+
+If the program supports the mapping from the certificate to the login name, it
+MUST be executed by at least one of next ways: by performing the mapping itself
+or by checking the validity of the certificate. In first case the program MUST
+return the corresponding reply code and the associated with the certificate
+login name, which MUST have non-zero length. In second case the application
+MUST return the corresponding reply code and the zero-length login name.
+
+Also the program SHOULD operate only with certificates and login names and
+SHOULD NOT control the status of system accounts whose are associated with
+login names, because the nature of login names in generic case is undefined.
+The control of the status of system accounts those are associated with login
+names is a prerogative of the application that calls the authentication
+program.
+
+The application waits for the response from the external authentication program
+for a hadrcoded timeout 20 seconds. If the program doesn't respond within this
+time, it will be terminated by the application by the TERM signal, otherwise
+the application will wait for normal termination of the program. Therefore it's
+recommended that the returning of the reply code and the mapped login name
+SHOULD be the last action of the program before the termination, and all other
+actions SHOULD be completed before it.
+
+6. Examples of configurations
+-----------------------------
+Next example represents the Kermit-style method of the certificate-based
+authentication:
+
+ftpd:allow:*:-f~/.tlslogin
+
+The main advantage of this method is that a user can manage the set of public
+key certificates himself. The characteristic property of this method is a
+presence of abilities for multiple users to gain access to one account and in a
+similar manner for one user to gain access to multiple accounts.
+
+There are numerous circumstances in which it is beneficial to have one of the
+abilities described above, or both of them (for example, to share an access to
+a group account on a web server).
+
+But there are also numerous circumstances in which it is required to prevent
+one or both of such abilities for security reasons. Some examples of security-
+enhanced modifications of this method are listed below:
+
+ftpd:allow://emailAddress/mydomain.com:-f~/.tlslogin
+  This mapping uses the same certificate storage, but expects the user's login
+  name in the "emailAddress" field of the client certificate's subject. If the
+  extraction of the login name from this field fails (for example, the host
+  name of the e-mail address doesn't match with specified "mydomain.com"), or
+  if the extracted login name doesn't match with the login name that is issued
+  by the client, the certificate-based authentication denies access to the
+  requested account, although the certificate itself is present in .tlslogin
+  file located in the login directory of the requested system account.
+
+ftpd:allow:/CN:-f/path/to/ssl_users.pem
+  In this case the certificates of all users are stored in one file that is
+  maintained by system administrator. The "CN" field of the certificate's
+  subject is used to identify the user's login name. It is verified against the
+  requested account name similar to the way described in previous example.
+
+Another approach to the problem of the certificate-based user authentication
+was implemented in Tim Hudson's SSLtelnet and SSLftp software. This approach in
+its original form may be represented by next example:
+
+ftpd:allow:username:/C=AU/ST=Some-State/O=Internet Widgits Pty Ltd/CN=John Doe
+
+This line simple maps the certificate described by its subject to the login
+name "username". To prevent an assignment of an individual line to each
+certificate, it's possible to use reqular expressions, for example:
+
+ftpd:allow://emailAddress:-r^/C=AU/ST=Some-State/O=Internet Widgits Pty Ltd/CN=[a-zA-Z. -]{1,25}/emailAddress=[a-zA-Z0-9_-]{1,9}@mydomain.com$
+
+In this example the "emailAddress" field of the certificate's subject is used
+to identify the user's login name. The domain name part of the e-mail address
+isn't specified in the userlist field of the mapping line because it is
+described by the regular expression in the certificate field of this line. The
+login name that is issued by the client is verified against one that is
+extracted from the client's certificate, and the subject name of the client's
+certificate is verified against the regular expression. If both verifications
+are performed successfully, the certificate-based user authentication allows
+access to the requested account.
+
+It's possible to allow one user to use multiple accounts by using the list of
+login names in the userlist field of the mapping line, for example:
+
+ftpd:allow:ftpadmin,webmaster:/path/to/cert/of/maintainer.pem
+
+or to allow multiple users to use one account, for example:
+
+ftpd:allow:ftpadmin:-r^/C=AU/ST=Some-State/O=Internet Widgits Pty Ltd/OU=FTP Site Maintainers/CN=[a-zA-Z. -]{1,25}/emailAddress=[a-zA-Z0-9_-]{1,9}@mydomain.com$
+
+The combination of the "allow" and "deny" lines can be used to specify more
+complex rules. The next example demonstrates how to allow access for users,
+whose certificate's subjects match the template, except the certain subset of
+such users:
+
+# an exception: the subset of denied users
+ftpd:deny:*:-r^/C=AU/ST=Some-State/O=Internet Widgits Pty Ltd/OU=Probationers/.*$
+# the set of allowed users
+ftpd:allow://emailAddress:-r^/C=AU/ST=Some-State/O=Internet Widgits Pty Ltd/.*/CN=[a-zA-Z. -]{1,25}/emailAddress=[a-zA-Z0-9_-]{1,9}@mydomain.com$
+
+Please note that referred above examples don't exhaust all suitable relations
+between client certificates and system login names. They are intended to
+provide guidelines for creating customized X.509 certificate-based
+authentication schemes.
+
+7. Limitations
+--------------
+Current realization of the certificate-based user authentication supports only 
+the subject name (which contains the entity's DN) as the possible container for
+the login name. The "subjectAltName" or another X.509v3 extension can't be used
+for this purpose. The ability to use the certificate's fields as the containers
+for the login name is a subject to enhance in future releases of BSDftpd-ssl.
+
+8. References
+-------------
+1. Kermit Security Reference: http://www.columbia.edu/kermit/security.html
+   30 July, 2002.
+2. RFC 2119: Key words for use in RFCs to Indicate Requirement Levels.
+   S. Bradner. March 1997.
+3. RFC 2228: FTP Security Extensions. M. Horowitz, S. Lunt. October 1997.
+4. RFC 2246: The TLS Protocol Version 1.0. T. Dierks, C. Allen. January 1999.
+5. RFC 3280: Internet X.509 Public Key Infrastructure Certificate and
+   Certificate Revocation List (CRL) Profile. R. Housley, W. Polk, W. Ford,
+   D. Solo. April 2002.
+
+Full copyright statement
+------------------------
+
+Copyright (c) 2002, 2003 Nick Leuta. All Rights Reserved.
+
+This document and translations of it may be copied and furnished to others, and
+derivative works may be prepared, copied, published and distributed, in whole
+or in part, without restriction of any kind, provided that the above copyright
+notice and this paragraph are included on all such copies and derivative works.
+References to this document are allowed in works of any kind without any
+restrictions.
+
+This document and the information contained herein is provided on an "AS IS"
+basis and AUTHOR DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT
+NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE INFORMATION HEREIN WILL NOT
+INFRINGE ANY RIGHTS OR ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR
+A PARTICULAR PURPOSE.

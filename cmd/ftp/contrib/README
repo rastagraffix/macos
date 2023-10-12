@@ -1,0 +1,8 @@
+ls:
+    Sources of "ls" command from FreeBSD for an "internal ls" feature of the
+    FTP server (with some modifications).
+libedit:
+    "Libedit" library from FreeBSD operating system (with some modifications).
+libbsdport:
+    A helper library for porting FreeBSD-specific library functions to other
+    operating systems.
