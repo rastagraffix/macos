@@ -1,0 +1,159 @@
+ACCOUNT	ruserpass.c	/^#define	ACCOUNT 4$/
+CMPL	cmdtab.c	/^#define CMPL(x)$/
+CMPL0	cmdtab.c	/^#define CMPL0$/
+CONTENTLEN	fetch.c	/^#define CONTENTLEN "Content-Length: "$/
+DEFAULT	ruserpass.c	/^#define	DEFAULT	1$/
+EMPTYSTRING	fetch.c	/^#define EMPTYSTRING(x)	((x) == NULL || (*(x) == '/
+FTP_PROXY	fetch.c	/^#define FTP_PROXY	"ftp_proxy"	\/* env var with ftp/
+FTP_URL	fetch.c	/^#define	FTP_URL		"ftp:\/\/"	\/* ftp URL prefix *\//
+HELPINDENT	main.c	/^#define HELPINDENT ((int) sizeof("disconnect"))$/
+HTTP_PROXY	fetch.c	/^#define HTTP_PROXY	"http_proxy"	\/* env var with h/
+HTTP_URL	fetch.c	/^#define	HTTP_URL	"http:\/\/"	\/* http URL prefix */
+ID	ruserpass.c	/^#define	ID	10$/
+INC_CHKCURSOR	main.c	/^#define INC_CHKCURSOR(x)	(x)++$/
+LOGIN	ruserpass.c	/^#define	LOGIN	2$/
+MACDEF	ruserpass.c	/^#define MACDEF  5$/
+MACH	ruserpass.c	/^#define	MACH	11$/
+Mmain	main.c	/^main(argc, argv)$/
+PASSWD	ruserpass.c	/^#define	PASSWD	3$/
+SECSPERHOUR	util.c	/^#define	SECSPERHOUR	(60*60)$/
+UC	ftp.c	/^#define	UC(b)	(((int)b)&0xff)$/
+aborthttp	fetch.c	/^aborthttp(notused)$/
+abortrecv	ftp.c	/^abortrecv(notused)$/
+abortsend	ftp.c	/^abortsend(notused)$/
+account	cmds.c	/^account(argc, argv)$/
+alarmtimer	util.c	/^alarmtimer(wait)$/
+another	util.c	/^another(pargc, pargv, prompt)$/
+auth	util.c	/^auth()$/
+auto_fetch	fetch.c	/^auto_fetch(argc, argv)$/
+bio_dump_cb	main.c	/^bio_dump_cb(bio, cmd, argp, argi, argl, ret)$/
+cd	cmds.c	/^cd(argc, argv)$/
+cdup	cmds.c	/^cdup(argc, argv)$/
+changetype	cmds.c	/^changetype(newtype, show)$/
+cmdabort	ftp.c	/^cmdabort(notused)$/
+cmdscanner	main.c	/^cmdscanner(top)$/
+command	ftp.c	/^command(const char *fmt, ...)$/
+comparstr	complete.c	/^comparstr(a, b)$/
+complete	complete.c	/^complete(el, ch)$/
+complete_ambiguous	complete.c	/^complete_ambiguous(word, list, words)$/
+complete_command	complete.c	/^complete_command(word, list)$/
+complete_local	complete.c	/^complete_local(word, list)$/
+complete_remote	complete.c	/^complete_remote(word, list)$/
+comvars	ftp.c	/^	static struct comvars {$/
+confirm	util.c	/^confirm(cmd, file)$/
+controlediting	util.c	/^controlediting()$/
+delete	cmds.c	/^delete(argc, argv)$/
+disconnect	cmds.c	/^disconnect(argc, argv)$/
+do_chmod	cmds.c	/^do_chmod(argc, argv)$/
+do_umask	cmds.c	/^do_umask(argc, argv)$/
+domacro	domacro.c	/^domacro(argc, argv)$/
+domap	cmds.c	/^domap(name)$/
+doproxy	cmds.c	/^doproxy(argc, argv)$/
+dotrans	cmds.c	/^dotrans(name)$/
+empty	ftp.c	/^empty(mask, sec)$/
+feat	cmds.c	/^feat(argc, argv)$/
+get	cmds.c	/^get(argc, argv)$/
+getcmd	main.c	/^getcmd(name)$/
+getit	cmds.c	/^getit(argc, argv, restartit, mode)$/
+getreply	ftp.c	/^getreply(expecteof)$/
+globulize	util.c	/^globulize(cpp)$/
+help	main.c	/^help(argc, argv)$/
+hookup	ftp.c	/^hookup(host0, port)$/
+idle	cmds.c	/^idle(argc, argv)$/
+initconn	ftp.c	/^initconn()$/
+intr	main.c	/^intr()$/
+isipv6addr	util.c	/^isipv6addr(const char *addr)$/
+isurl	fetch.c	/^isurl(p)$/
+lcd	cmds.c	/^lcd(argc, argv)$/
+list_vertical	util.c	/^list_vertical(sl)$/
+login	util.c	/^login(host, user, pass)$/
+lostpeer	main.c	/^lostpeer()$/
+lpwd	cmds.c	/^lpwd(argc, argv)$/
+ls	cmds.c	/^ls(argc, argv)$/
+mabort	cmds.c	/^mabort(signo)$/
+macdef	cmds.c	/^macdef(argc, argv)$/
+makeargv	main.c	/^makeargv()$/
+makedir	cmds.c	/^makedir(argc, argv)$/
+mdelete	cmds.c	/^mdelete(argc, argv)$/
+mget	cmds.c	/^mget(argc, argv)$/
+mls	cmds.c	/^mls(argc, argv)$/
+modtime	cmds.c	/^modtime(argc, argv)$/
+mput	cmds.c	/^mput(argc, argv)$/
+newer	cmds.c	/^newer(argc, argv)$/
+onoff	cmds.c	/^onoff(bool)$/
+pack2	ftp.c	/^#define pack2(var, offset) \\$/
+pack4	ftp.c	/^#define pack4(var, offset) \\$/
+page	cmds.c	/^page(argc, argv)$/
+progressmeter	util.c	/^progressmeter(flag)$/
+prompt	main.c	/^prompt()$/
+proxabort	cmds.c	/^proxabort(notused)$/
+ptransfer	util.c	/^ptransfer(siginfo)$/
+put	cmds.c	/^put(argc, argv)$/
+pwd	cmds.c	/^pwd(argc, argv)$/
+quit	cmds.c	/^quit(argc, argv)$/
+quote	cmds.c	/^quote(argc, argv)$/
+quote1	cmds.c	/^quote1(initial, argc, argv)$/
+recvrequest	ftp.c	/^recvrequest(cmd, local, remote, lmode, printnames,/
+reget	cmds.c	/^reget(argc, argv)$/
+remglob	util.c	/^remglob(argv, doswitch, errbuf)$/
+remotemodtime	util.c	/^remotemodtime(file, noisy)$/
+remotesize	util.c	/^remotesize(file, noisy)$/
+removedir	cmds.c	/^removedir(argc, argv)$/
+renamefile	cmds.c	/^renamefile(argc, argv)$/
+restart	cmds.c	/^restart(argc, argv)$/
+rmthelp	cmds.c	/^rmthelp(argc, argv)$/
+rmtstatus	cmds.c	/^rmtstatus(argc, argv)$/
+ruserpass	ruserpass.c	/^ruserpass(host, aname, apass, aacct)$/
+sendrequest	ftp.c	/^sendrequest(cmd, local, remote, printnames)$/
+set_ssl_trace	main.c	/^set_ssl_trace(SSL *con) $/
+setascii	cmds.c	/^setascii(argc, argv)$/
+setbell	cmds.c	/^setbell(argc, argv)$/
+setbinary	cmds.c	/^setbinary(argc, argv)$/
+setcase	cmds.c	/^setcase(argc, argv)$/
+setcr	cmds.c	/^setcr(argc, argv)$/
+setdebug	cmds.c	/^setdebug(argc, argv)$/
+setedit	cmds.c	/^setedit(argc, argv)$/
+setepsv4	cmds.c	/^setepsv4(argc, argv)$/
+setepsv6	cmds.c	/^setepsv6(argc, argv)$/
+setform	cmds.c	/^setform(argc, argv)$/
+setftmode	cmds.c	/^setftmode(argc, argv)$/
+setgate	cmds.c	/^setgate(argc, argv)$/
+setglob	cmds.c	/^setglob(argc, argv)$/
+sethash	cmds.c	/^sethash(argc, argv)$/
+setnmap	cmds.c	/^setnmap(argc, argv)$/
+setntrans	cmds.c	/^setntrans(argc, argv)$/
+setpassive	cmds.c	/^setpassive(argc, argv)$/
+setpeer	util.c	/^setpeer(argc, argv)$/
+setport	cmds.c	/^setport(argc, argv)$/
+setpreserve	cmds.c	/^setpreserve(argc, argv)$/
+setprogress	cmds.c	/^setprogress(argc, argv)$/
+setprompt	cmds.c	/^setprompt(argc, argv)$/
+setprot	cmds.c	/^setprot(argc, argv)$/
+setrestrict	cmds.c	/^setrestrict(argc, argv)$/
+setrunique	cmds.c	/^setrunique(argc, argv)$/
+setstruct	cmds.c	/^setstruct(argc, argv)$/
+setsunique	cmds.c	/^setsunique(argc, argv)$/
+settenex	cmds.c	/^settenex(argc, argv)$/
+settrace	cmds.c	/^settrace(argc, argv)$/
+setttywidth	util.c	/^setttywidth(a)$/
+settype	cmds.c	/^settype(argc, argv)$/
+setverbose	cmds.c	/^setverbose(argc, argv)$/
+shell	cmds.c	/^shell(argc, argv)$/
+site	cmds.c	/^site(argc, argv)$/
+sizecmd	cmds.c	/^sizecmd(argc, argv)$/
+slurpstring	main.c	/^slurpstring()$/
+sockinet	ftp.c	/^	struct sockinet {$/
+sockunion	ftp.c	/^union sockunion {$/
+status	cmds.c	/^status(argc, argv)$/
+su_family	ftp.c	/^#define su_family	su_si.si_family$/
+su_len	ftp.c	/^#define su_len		su_si.si_len$/
+su_port	ftp.c	/^#define su_port		su_si.si_port$/
+syst	cmds.c	/^syst(argc, argv)$/
+togglevar	cmds.c	/^togglevar(argc, argv, var, mesg)$/
+token	ruserpass.c	/^token()$/
+toktab	ruserpass.c	/^static struct toktab {$/
+types	cmds.c	/^struct	types {$/
+updateprogressmeter	util.c	/^updateprogressmeter(dummy)$/
+url_get	fetch.c	/^url_get(origline, proxyenv)$/
+usage	main.c	/^usage()$/
+user	cmds.c	/^user(argc, argv)$/

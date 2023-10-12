@@ -203,7 +203,9 @@ char macbuf[4096];
 
 extern struct	cmd cmdtab[];
 
+#ifdef USE_SSL
 #include "sslapp.h"
 #include "ssl_port_ftps.h"
+#endif
 
 #include <port_base.h>
