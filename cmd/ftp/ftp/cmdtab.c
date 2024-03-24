@@ -69,9 +69,7 @@ char	deletehelp[] =	"delete remote file";
 char	dirhelp[] =	"list contents of remote directory";
 char	disconhelp[] =	"terminate ftp session";
 char	domachelp[] =	"execute macro";
-#ifndef SMALL
 char	edithelp[] =	"toggle command line editing";
-#endif /* !SMALL */
 char	epsv4help[] =	"toggle use of EPSV/EPRT on IPv4 ftp";
 char	epsv6help[] =	"toggle use of EPSV/EPRT on IPv6 ftp";
 char	feathelp[] =	"show list of extensions supported by remote server";
@@ -138,13 +136,8 @@ char	umaskhelp[] =	"get (set) umask on remote side";
 char	userhelp[] =	"send new user information";
 char	verbosehelp[] =	"toggle verbose mode";
 
-#ifdef SMALL
-#define CMPL(x)
-#define CMPL0
-#else  /* !SMALL */
 #define CMPL(x)	__STRING(x), 
 #define CMPL0	"",
-#endif /* !SMALL */
 
 struct cmd cmdtab[] = {
 	{ "!",		shellhelp,	0, 0, 0, CMPL0		shell },
@@ -165,9 +158,7 @@ struct cmd cmdtab[] = {
 	{ "delete",	deletehelp,	0, 1, 1, CMPL(r)	delete },
 	{ "dir",	dirhelp,	1, 1, 1, CMPL(rl)	ls },
 	{ "disconnect",	disconhelp,	0, 1, 1, CMPL0		disconnect },
-#ifndef SMALL
 	{ "edit",	edithelp,	0, 0, 0, CMPL0		setedit },
-#endif /* !SMALL */
 	{ "epsv4",	epsv4help,	0, 0, 0, CMPL0		setepsv4 },
 #ifdef INET6
 	{ "epsv6",	epsv6help,	0, 0, 0, CMPL0		setepsv6 },

@@ -53,13 +53,11 @@
 #include <netinet/in.h>
 #include <netdb.h>
 
-#ifndef SMALL
 #ifdef LINUX
 #include "histedit.h"
 #else /* !LINUX */
 #include <histedit.h>
 #endif /* LINUX */
-#endif /* !SMALL */
 
 #include "extern.h"
 
@@ -136,14 +134,12 @@ char   *tmpdir;			/* temporary directory */
 int     try_epsv4;               /* try EPSV for this session (IPv4) */
 int     try_epsv6;               /* try EPSV for this session (IPv6) */
 
-#ifndef SMALL
 int	  editing;		/* command line editing enabled */
 EditLine *el;			/* editline(3) status structure */
 History  *hist;			/* editline(3) history structure */
 char	 *cursor_pos;		/* cursor position we're looking for */
 size_t	  cursor_argc;		/* location of cursor in margv */
 size_t	  cursor_argo;		/* offset of cursor in margv[cursor_argc] */
-#endif /* !SMALL */
 
 off_t	bytes;			/* current # of bytes read */
 off_t	filesize;		/* size of file being transferred */
@@ -185,9 +181,7 @@ struct cmd {
 	char	 c_bell;	/* give bell when command completes */
 	char	 c_conn;	/* must be connected to use command */
 	char	 c_proxy;	/* proxy server may execute */
-#ifndef SMALL
 	char	*c_complete;	/* context sensitive completion list */
-#endif /* !SMALL */
 	void	(*c_handler) __P((int, char **)); /* function to call */
 };
 

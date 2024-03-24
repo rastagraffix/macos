@@ -53,10 +53,8 @@ void	changetype __P((int, int));
 void	cmdabort __P((int));
 void	cmdscanner __P((int));
 int	command __P((const char *, ...));
-#ifndef SMALL
 unsigned char complete __P((EditLine *, int));
 void	controlediting __P((void));
-#endif /* !SMALL */
 int	confirm __P((const char *, const char *));
 FILE   *dataconn __P((const char *));
 void	delete __P((int, char **));

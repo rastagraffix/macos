@@ -858,7 +858,6 @@ alarmtimer(wait)
 /*
  * Setup or cleanup EditLine structures
  */
-#ifndef SMALL
 void
 controlediting()
 {
@@ -891,7 +890,6 @@ controlediting()
 		}
 	}
 }
-#endif /* !SMALL */
 
 /*
  * Determine if given string is an IPv6 address or not.

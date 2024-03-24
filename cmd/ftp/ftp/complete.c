@@ -37,7 +37,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SMALL
 
 #include <sys/cdefs.h>
 
@@ -380,5 +379,3 @@ complete(el, ch)
 
 	return (CC_ERROR);
 }
-
-#endif /* !SMALL */

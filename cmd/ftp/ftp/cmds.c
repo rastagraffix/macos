@@ -720,9 +720,7 @@ status(argc, argv)
 	printf("Use of EPSV/EPRT cmds for IPv6: %s%s.\n", onoff(epsv6),
 	    (!try_epsv6 && epsv6) ? " (but disabled for this connection)" : "");
 #endif
-#ifndef SMALL
 	printf("Command line editing: %s.\n", onoff(editing));
-#endif /* !SMALL */
 	if (macnum > 0) {
 		puts("Macros:");
 		for (i=0; i<macnum; i++) {
@@ -770,7 +768,6 @@ setbell(argc, argv)
 	code = togglevar(argc, argv, &bell, "Bell mode");
 }
 
-#ifndef SMALL
 /*
  * Set command line editing
  */
@@ -784,7 +781,6 @@ setedit(argc, argv)
 	code = togglevar(argc, argv, &editing, "Editing mode");
 	controlediting();
 }
-#endif /* !SMALL */
 
 /*
  * Turn on packet tracing.

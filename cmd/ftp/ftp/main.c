@@ -175,11 +175,9 @@ main(argc, argv)
 	verbose = 0;
 	progress = 0;
 	gatemode = 0;
-#ifndef SMALL
 	editing = 0;
 	el = NULL;
 	hist = history_init();
-#endif
 	mark = HASHBYTES;
 	marg_sl = sl_init();
 	if ((tmpdir = getenv("TMPDIR")) == NULL)
@@ -214,10 +212,8 @@ main(argc, argv)
 	fromatty = isatty(fileno(stdin));
 	if (fromatty) {
 		verbose = 1;		/* verbose if from a tty */
-#ifndef SMALL
 		if (! dumbterm)
 			editing = 1;	/* editing mode on if tty is usable */
-#endif
 	}
 	if (isatty(fileno(stdout)) && !dumbterm)
 		progress = 1;		/* progress bar on if tty is usable */
@@ -242,9 +238,7 @@ main(argc, argv)
 			break;
 
 		case 'e':
-#ifndef SMALL
 			editing = 0;
-#endif
 			break;
 
 		case 'g':
@@ -474,9 +468,7 @@ main(argc, argv)
 			setpeer(xargp-xargv, xargv);
 		}
 	}
-#ifndef SMALL
 	controlediting();
-#endif /* !SMALL */
 	top = sigsetjmp(toplevel,1) == 0;
 	if (top) {
 		(void)signal(SIGINT, (sig_t)intr);
@@ -545,20 +537,14 @@ cmdscanner(top)
 {
 	struct cmd *c;
 	int num;
-#ifndef SMALL
 	HistEvent hev;
-#endif /* !SMALL */
 
 	if (!top 
-#ifndef SMALL
 	    && !editing
-#endif /* !SMALL */
 	    )
 		(void)putchar('\n');
 	for (;;) {
-#ifndef SMALL
 		if (!editing) {
-#endif /* !SMALL */
 			if (fromatty) {
 				fputs(prompt(), stdout);
 				(void)fflush(stdout);
@@ -578,7 +564,6 @@ cmdscanner(top)
 					/* void */;
 				break;
 			} /* else it was a line without a newline */
-#ifndef SMALL
 		} else {
 			const char *buf;
 			cursor_pos = NULL;
@@ -596,19 +581,18 @@ cmdscanner(top)
 			line[num] = '\0';
 			history(hist, &hev, H_ENTER, buf);
 		}
-#endif /* !SMALL */
 
 		makeargv();
 		if (margc == 0)
 			continue;
-#if 0 && !defined(SMALL)	/* XXX: don't want el_parse */
+#if 0	/* XXX: don't want el_parse */
 		/*
 		 * el_parse returns -1 to signal that it's not been handled
 		 * internally.
 		 */
 		if (el_parse(el, margc, margv) != -1)
 			continue;
-#endif /* !SMALL */
+#endif
 		c = getcmd(margv[0]);
 		if (c == (struct cmd *)-1) {
 			puts("?Ambiguous command.");
@@ -686,7 +670,6 @@ makeargv()
 		if (argp == NULL)
 			break;
 	}
-#ifndef SMALL
 	if (cursor_pos == line) {
 		cursor_argc = 0;
 		cursor_argo = 0;
@@ -694,12 +677,8 @@ makeargv()
 		cursor_argc = margc;
 		cursor_argo = strlen(margv[margc-1]);
 	}
-#endif /* !SMALL */
 }
 
-#ifdef SMALL
-#define INC_CHKCURSOR(x)	(x)++
-#else  /* !SMALL */
 #define INC_CHKCURSOR(x)	{ (x)++ ; \
 				if (x == cursor_pos) { \
 					cursor_argc = margc; \
@@ -707,7 +686,6 @@ makeargv()
 					cursor_pos = NULL; \
 				} }
 						
-#endif /* !SMALL */
 
 /*
  * Parse string into argbuf;
