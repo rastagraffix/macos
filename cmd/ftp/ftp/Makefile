@@ -4,9 +4,10 @@
 
 .include "../../Makefile.inc"
 
-DEBUG= -g
+#CFLAGS= -g
+#DEBUG= -g
 
-# Clang is too noisy ...
+# Clang is noisy ...
 CFLAGS+= -Wno-unused-const-variable
 CFLAGS+= -Wno-deprecated-non-prototype
 CFLAGS+= -Wno-implicit-function-declaration
@@ -19,11 +20,21 @@ CFLAGS+=-DINET6
 
 ### TLS/SSL support
 
-#CFLAGS+=-DUSE_SSL
-#LDADD+=	-L${OPENSSLLIB} -lssl -lcrypto
-#.PATH:	${.CURDIR}/../ssl
-#SRCS+= sslapp.c ssl_port.c ssl_port_ftps.c
-#CFLAGS+= -I${OPENSSLINC} -I../ssl
+# This requires a 3rd party installation of OpenSSL; MacOS
+# does not ship with one. Point the next two macros at your
+# local installation to enable it in the build.
+OPENSSLINC= /opt/local/include
+OPENSSLLIB= /opt/local/lib
+
+.if exists(${OPENSSLINC}/openssl/crypto.h) && \
+    exists(${OPENSSLLIB}/libcrypto.a) && \
+    exists(${OPENSSLLIB}/libssl.a)
+CFLAGS+=-DUSE_SSL
+LDADD+=	-L${OPENSSLLIB} -lssl -lcrypto
+.PATH:	${.CURDIR}/../ssl
+SRCS+= sslapp.c ssl_port.c ssl_port_ftps.c
+CFLAGS+= -I${OPENSSLINC} -I../ssl
+.endif
 
 PROG=	ftp
 SRCS+=	cmds.c cmdtab.c complete.c domacro.c fetch.c ftp.c main.c ruserpass.c \
