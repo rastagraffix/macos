@@ -204,8 +204,15 @@ char macbuf[4096];
 extern struct	cmd cmdtab[];
 
 #ifdef USE_SSL
-#include "sslapp.h"
-#include "ssl_port_ftps.h"
+# include "sslapp.h"
+# include "ssl_port_ftps.h"
+#else
+# define GETC(X)	getc(X)
+# define PUTC(X,Y)	putc((X),(Y))
+# define DATAGETC(X)	getc((X))
+# define DATAPUTC(X,Y)	putc((X),(Y))
+# define FFLUSH(X)	fflush((X))
+# define DATAFLUSH(X)	fflush((X))
 #endif
 
 #include <port_base.h>

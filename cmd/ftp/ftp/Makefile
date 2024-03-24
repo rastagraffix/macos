@@ -4,6 +4,13 @@
 
 .include "../../Makefile.inc"
 
+DEBUG= -g
+
+# Clang is too noisy ...
+CFLAGS+= -Wno-unused-const-variable
+CFLAGS+= -Wno-deprecated-non-prototype
+CFLAGS+= -Wno-implicit-function-declaration
+
 ## IPv6 support
 CFLAGS+=-DINET6
 
@@ -24,7 +31,7 @@ SRCS+=	cmds.c cmdtab.c complete.c domacro.c fetch.c ftp.c main.c ruserpass.c \
 
 CFLAGS+= -I../port -Wall -fcommon
 
-LDADD+=	../port/libedit.a
+LDADD+=	-ledit
 LDADD+=	-lncurses
 DPADD+=	${LIBEDIT} ${LIBNCURSES}
 

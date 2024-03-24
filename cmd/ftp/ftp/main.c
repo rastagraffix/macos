@@ -65,6 +65,7 @@ static const char __RCSID_SOURCE[] = "$NetBSD: main.c,v 1.26 1997/10/14 16:31:22
 
 #include <err.h>
 #include <errno.h>
+#include <histedit.h>
 #include <locale.h>
 #include <netdb.h>
 #include <pwd.h>
@@ -146,6 +147,10 @@ main(argc, argv)
 	char *cp, homedir[MAXPATHLEN], *s;
 	int dumbterm;
 	char *src_addr = NULL;
+#ifdef USE_SSL
+	char *optname;
+	size_t optnamelen;
+#endif /* USE_SSL */
 
 	(void) setlocale(LC_ALL, "");
 
@@ -173,7 +178,7 @@ main(argc, argv)
 #ifndef SMALL
 	editing = 0;
 	el = NULL;
-	hist = NULL;
+	hist = history_init();
 #endif
 	mark = HASHBYTES;
 	marg_sl = sl_init();
@@ -219,8 +224,6 @@ main(argc, argv)
 
 	while ((ch = getopt(argc, argv, "46adeginpP:s:tUvVz:")) != -1) {
 		switch (ch) {
-			char *optname;
-			size_t optnamelen;
 		case '4':
 			family = AF_INET;
 			break;
@@ -542,6 +545,9 @@ cmdscanner(top)
 {
 	struct cmd *c;
 	int num;
+#ifndef SMALL
+	HistEvent hev;
+#endif /* !SMALL */
 
 	if (!top 
 #ifndef SMALL
@@ -588,7 +594,7 @@ cmdscanner(top)
 			}
 			memcpy(line, buf, num);
 			line[num] = '\0';
-			history(hist, H_ENTER, buf);
+			history(hist, &hev, H_ENTER, buf);
 		}
 #endif /* !SMALL */
 
@@ -883,7 +889,11 @@ usage()
 {
 	(void)fprintf(stderr,
 	    "usage:\n"
+#ifdef USE_SSL
 	    "    %s [-46adeginptUvV] [-P port] [-s src_addr] [-z securemode] [host [port]]\n"
+#else
+	    "    %s [-46adeginptUvV] [-P port] [-s src_addr] [host [port]]\n"
+#endif
 	    "    %s host:path[/]\n"
 	    "    %s ftp://host[:port]/path[/]\n"
 	    "    %s http://host[:port]/file\n",
