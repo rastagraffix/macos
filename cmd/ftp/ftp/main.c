@@ -135,8 +135,6 @@ int family = AF_UNSPEC;
 int family = AF_INET;
 #endif /* INET6 */
 
-int main __P((int, char **));
-
 int
 main(argc, argv)
 	int argc;
@@ -154,6 +152,9 @@ main(argc, argv)
 
 	(void) setlocale(LC_ALL, "");
 
+	progname = getprogname();
+	if (progname == NULL)
+		progname = "ftp";
 	ftpport = "ftp";
 	httpport = "http";
 	gateport = NULL;
@@ -177,7 +178,7 @@ main(argc, argv)
 	gatemode = 0;
 	editing = 0;
 	el = NULL;
-	hist = history_init();
+	hist = NULL;
 	mark = HASHBYTES;
 	marg_sl = sl_init();
 	if ((tmpdir = getenv("TMPDIR")) == NULL)
@@ -460,7 +461,7 @@ main(argc, argv)
 				exit(0);
 			(void)signal(SIGINT, (sig_t)intr);
 			(void)signal(SIGPIPE, (sig_t)lostpeer);
-			*xargp++ = __progname;
+			*xargp++ = progname;
 			*xargp++ = argv[0];		/* host */
 			if (argc > 1)
 				*xargp++ = argv[1];	/* port */
@@ -525,7 +526,7 @@ lostpeer()
 char *
 prompt()
 {
-	return ("ftps> ");
+	return ("ftp> ");
 }
 
 /*
@@ -875,6 +876,6 @@ usage()
 	    "    %s host:path[/]\n"
 	    "    %s ftp://host[:port]/path[/]\n"
 	    "    %s http://host[:port]/file\n",
-	    __progname, __progname, __progname, __progname);
+	    progname, progname, progname, progname);
 	exit(1);
 }

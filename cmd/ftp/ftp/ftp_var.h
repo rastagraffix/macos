@@ -80,6 +80,7 @@
 /*
  * Options and other state info.
  */
+char   *progname;		/* the name we were invoked as */
 int	trace;			/* trace packets exchanged */
 int	hash;			/* print # for each buffer transferred */
 int	mark;			/* number of bytes between hashes */

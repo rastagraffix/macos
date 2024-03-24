@@ -863,7 +863,7 @@ controlediting()
 {
 	if (editing && el == NULL && hist == NULL) {
 		HistEvent hev;
-		el = el_init(getprogname(), stdin, stdout, stderr);
+		el = el_init(progname, stdin, stdout, stderr);
 		hist = history_init();
 		history(hist, &hev, H_SETSIZE, 100);	/* remember 100 events */
 		el_set(el, EL_HIST, history, hist);
