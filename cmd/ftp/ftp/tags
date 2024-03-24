@@ -1,6 +1,6 @@
 ACCOUNT	ruserpass.c	/^#define	ACCOUNT 4$/
-CMPL	cmdtab.c	/^#define CMPL(x)$/
-CMPL0	cmdtab.c	/^#define CMPL0$/
+CMPL	cmdtab.c	/^#define CMPL(x)	__STRING(x), $/
+CMPL0	cmdtab.c	/^#define CMPL0	"",$/
 CONTENTLEN	fetch.c	/^#define CONTENTLEN "Content-Length: "$/
 DEFAULT	ruserpass.c	/^#define	DEFAULT	1$/
 EMPTYSTRING	fetch.c	/^#define EMPTYSTRING(x)	((x) == NULL || (*(x) == '/
@@ -10,7 +10,7 @@ HELPINDENT	main.c	/^#define HELPINDENT ((int) sizeof("disconnect"))$/
 HTTP_PROXY	fetch.c	/^#define HTTP_PROXY	"http_proxy"	\/* env var with h/
 HTTP_URL	fetch.c	/^#define	HTTP_URL	"http:\/\/"	\/* http URL prefix */
 ID	ruserpass.c	/^#define	ID	10$/
-INC_CHKCURSOR	main.c	/^#define INC_CHKCURSOR(x)	(x)++$/
+INC_CHKCURSOR	main.c	/^#define INC_CHKCURSOR(x)	{ (x)++ ; \\$/
 LOGIN	ruserpass.c	/^#define	LOGIN	2$/
 MACDEF	ruserpass.c	/^#define MACDEF  5$/
 MACH	ruserpass.c	/^#define	MACH	11$/
