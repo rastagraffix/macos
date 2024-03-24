@@ -1,3 +1,8 @@
+* Sun Mar 24 2024 Lyndon Nerenberg <lyndon@orthanc.ca>
+- Port to MacOS 14 (Sonoma).
+- Removed the #ifdef SMALL conditionals.  The PDP-11 days are
+  long behind us.
+
 * Mon May  2 2005 Nick Leuta <skynick@mail.sc.ru>
   [1.1.0]
 General changes:
